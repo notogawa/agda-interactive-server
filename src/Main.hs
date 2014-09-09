@@ -16,10 +16,11 @@ import Data.Monoid
 import qualified Data.Aeson as JSON
 import Control.Applicative
 import Control.Monad
+import System.IO.Temp
 
 main :: IO ()
 main = do
-  let port = 3000 -- とりあえずポート3000番で。
+  let port = 3000
   let setting = Warp.setPort port Warp.defaultSettings
   putStrLn $ "start server port=" ++ show port
   Warp.runSettings setting simpleWSWaiApp
@@ -29,28 +30,25 @@ simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerAp
 
 simpleWaiApp :: Wai.Application
 simpleWaiApp req respond = do
-  putStrLn . show . Wai.pathInfo $ req -- とりあえずリクエストのパスとか表示してみる。
-  respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
+  case Wai.pathInfo $ req of
+    ["agda.js"] -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
+    _           -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
 
--- websocketのリクエストを処理するアプリケーション
 simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
   putStrLn "Websocket Request received"
-  -- ここで、websocketのリクエストをpathなどに応じてacceptRequestするか、
-  -- rejectRequestするかなどを判断・処理する。
-  -- リクエストの情報はpendingRequestを使用してpdconnから取得できる。
-  -- TODO: agda --interactive
   conn <- WS.acceptRequest pdconn
-  handles@(hin, hout, _herr, _ph) <- runInteractiveCommand "agda --interactive -i. -i/usr/share/agda-stdlib"
-  _ <- readOutput hout ""
-  hSetBuffering hin NoBuffering
-  hSetBuffering hout NoBuffering
-  -- リクエストをacceptしたらメッセージループに入る。
-  -- リクエスト内容に応じて異なるメッセージループを使い分けることもできる。
-  -- また、接続直後のメッセージのみ特別な処理をしたり、
-  -- 接続直後に一方的にメッセージを送り付けるような処理をしたりする場合は、
-  -- メッセージループに入る前に処理してしまうことも可能。
-  wsMessageLoop conn handles
+  withSystemTempDirectory "ais" $ \dir -> do
+    let cmd = "agda --interactive -i" ++ dir ++" -i/usr/share/agda-stdlib"
+    handles@(hin, hout, _herr, _ph) <- runInteractiveCommand cmd
+    _ <- readOutput hout ""
+    hSetBuffering hin  NoBuffering
+    hSetBuffering hout NoBuffering
+    let src = dir ++ "/Main.agda"
+    writeFile src "module Main where"
+    hPutStrLn hin $ ":load " <> src
+    _ <- readOutput hout ""
+    wsMessageLoop conn handles src
 
 readOutput :: Handle -> BS.ByteString -> IO (Maybe BS.ByteString)
 readOutput h x = do
@@ -61,7 +59,7 @@ readOutput h x = do
       line <- BS.hGetNonBlocking h 1024
       BS.putStr line
       let x' = x <> line
-      if BS.isSuffixOf "\nMain> " x' then return $ Just x' else readOutput h x'
+      if BS.isSuffixOf "Main> " x' then return $ Just x' else readOutput h x'
 
 data Message =
     Message
@@ -76,14 +74,19 @@ instance JSON.FromJSON Message where
         <*> v JSON..: "body"
     parseJSON _ = mzero
 
-wsMessageLoop :: WS.Connection -> (Handle, Handle, Handle, ProcessHandle) -> IO ()
-wsMessageLoop conn handles@(hin, hout, herr, ph) = do
+wsMessageLoop :: WS.Connection -> (Handle, Handle, Handle, ProcessHandle) -> FilePath -> IO ()
+wsMessageLoop conn handles@(hin, hout, herr, ph) src = do
   msgData <- WS.receiveData conn
   print msgData
   case JSON.decode msgData of
     Nothing  -> putStrLn "ERROR"
     Just msg -> case messageType msg of
-                  "source"  -> putStrLn "source"
+                  "source"  -> do
+                    putStrLn "source"
+                    T.writeFile src $ messageBody msg
+                    T.hPutStrLn hin $ ":reload"
+                    _ <- readOutput hout ""
+                    wsMessageLoop conn handles src
                   "command" -> do
                     putStrLn "command"
                     T.hPutStrLn hin $ messageBody msg
@@ -95,5 +98,5 @@ wsMessageLoop conn handles@(hin, hout, herr, ph) = do
                         return ()
                       Just line -> do
                         WS.sendTextData conn $ T.decodeUtf8 line
-                        wsMessageLoop conn handles
+                        wsMessageLoop conn handles src
                   _ -> putStrLn "ERROR"

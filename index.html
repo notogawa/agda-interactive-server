@@ -3,107 +3,29 @@
 <title>Agda WebSocket Test</title>
 <head>
   <meta charset="UTF-8">
+  <script src="agda.js"></script>
 </head>
 <body>
 
 <script type=text/javascript>
-var Agda = (function () {
-    function Agda (remoteHost, onOpen, onError, onMessage) {
-        this._debug = (typeof debug === 'undefined') ? false : true;
-        try {
-            this._connection = new WebSocket(remoteHost);
-        } catch (err) {
-            console.error(err);
-        }
-        this._connection.onopen = onOpen;
-        this._connection.onerror = onError;
-        this._connection.onmessage = onMessage;
-    }
-    function sendSource (source) {
-        var msg = {};
-        msg.type = 'source';
-        msg.body = source;
-        this._connection.send(JSON.stringify(msg));
-    }
-    function sendCommand (cmd) {
-        var msg = {};
-        msg.type = 'command';
-        msg.body = cmd;
-        this._connection.send(JSON.stringify(msg));
-    }
-    function sendQuit () {
-        sendCommand.call(this, ':?');
-    }
-    function sendReload () {
-        sendCommand.call(this, ':reload');
-    }
-    function sendConstraints () {
-        sendCommand.call(this, ':constraints');
-    }
-    function sendContext (meta) {
-        sendCommand.call(this, ':Context '+meta);
-    }
-    function sendGive (meta, expr) {
-        sendCommand.call(this, ':give '+meta+' '+expr);
-    }
-    function sendRefine (meta, expr) {
-        sendCommand.call(this, ':Refine '+meta+' '+expr);
-    }
-    function sendMetas () {
-        sendCommand.call(this, ':metas');
-    }
-    function sendEval (meta, expr) {
-        sendCommand.call(this, ':eval '+meta+' '+expr);
-    }
-    function sendTypeOf () {
-        sendCommand.call(this, ':typeOf');
-    }
-    function sendTypeIn (meta, expr) {
-        sendCommand.call(this, ':typeIn '+meta+' '+expr);
-    }
-    function sendWakeup () {
-        sendCommand.call(this, ':wakeup');
-    }
-    function sendScope () {
-        sendCommand.call(this, ':scope');
-    }
-
-    Agda.prototype = {
-        constructor: Agda,
-        sendQuit: sendQuit,
-        sendReload: sendReload,
-        sendConstraints: sendConstraints,
-        sendContext: sendContext,
-        sendGive: sendGive,
-        sendRefine: sendRefine,
-        sendMetas: sendMetas,
-        sendEval: sendEval,
-        sendTypeOf: sendTypeOf,
-        sendTypeIn: sendTypeIn,
-        sendWakeup: sendWakeup,
-        sendScope: sendScope,
-        sendSource: sendSource
-    };
-
-    return Agda;
-} () );
-
 var f = function (x) {};
 var onMessage = function (msg) {
     document.getElementById('agda_prompt').innerText = msg.data;
 };
-var agda = new Agda('ws://192.168.56.5:3000/', f, f, onMessage);
+var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
+var agda = new Agda(proto+location.host, f, f, onMessage);
 </script>
 
 <pre id="log"></pre>
 
-<form onsubmit="agda.sendQuit(); return false;">
-  <textarea id="agda_buffer">
+<form onsubmit="return false;">
+  <textarea id="agda_buffer" style="width: 100%; height: 200px;">
 module Main where
 
 idAgda : {A : Set} → A → A
 idAgda x = x</textarea>
-  <input type="submit" />
+  <input type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value); agda.sendReload();"/>
+  <input type="button" value="Metas" onclick="agda.sendMetas();"/>
 </form>
 
 <pre id="agda_prompt" style="background-color: #000; color: #FFF"></pre>
