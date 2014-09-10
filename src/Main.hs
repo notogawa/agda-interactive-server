@@ -41,23 +41,23 @@ spawnPingThread conn interval =
       threadDelay $ 1000 * 1000 * interval
       WS.sendPing conn ("" :: BS.ByteString)
 
+runAgda :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
+runAgda dir = do
+  let cmd = "agda --interactive -i" ++ dir ++" -i/usr/share/agda-stdlib"
+  handles@(hin, hout, _herr, _ph) <- runInteractiveCommand cmd
+  _ <- readOutput hout ""
+  hSetBuffering hin  NoBuffering
+  hSetBuffering hout NoBuffering
+  return handles
+
 simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
   putStrLn "Websocket Request received"
   conn <- WS.acceptRequest pdconn
   _ <- spawnPingThread conn 10
   withSystemTempDirectory "ais" $ \dir -> do
-    let cmd = "agda --interactive -i" ++ dir ++" -i/usr/share/agda-stdlib"
-    handles@(hin, hout, _herr, _ph) <- runInteractiveCommand cmd
-    _ <- readOutput hout ""
-    hSetBuffering hin  NoBuffering
-    hSetBuffering hout NoBuffering
-    let src = dir ++ "/Main.agda"
-    T.writeFile src "module Main where"
-    putStrLn $ ":load " <> src
-    hPutStrLn hin $ ":load " <> src
-    _ <- readOutput hout ""
-    wsMessageLoop conn handles src
+    handles <- runAgda dir
+    wsMessageLoop conn handles dir
 
 readOutput :: Handle -> BS.ByteString -> IO (Maybe BS.ByteString)
 readOutput h x = do
@@ -88,13 +88,15 @@ sendCommand (hin, hout, herr, ph) command = do
   T.hPutStrLn hin command
   readOutput hout ""
 
+quit :: (Handle, Handle, Handle, ProcessHandle) -> IO ()
 quit (hin, hout, herr, ph) = do
   mapM_ hClose [hin, hout, herr]
   _ <- waitForProcess ph
   return ()
 
 wsMessageLoop :: WS.Connection -> (Handle, Handle, Handle, ProcessHandle) -> FilePath -> IO ()
-wsMessageLoop conn hs src = go where
+wsMessageLoop conn hs dir = go where
+    src = dir ++ "/Main.agda"
     go = do
       msgData <- WS.receiveData conn
       case JSON.decode msgData of
@@ -102,8 +104,14 @@ wsMessageLoop conn hs src = go where
         Just msg -> case messageType msg of
                       "source"  -> do
                         T.writeFile src $ messageBody msg
-                        _ <- sendCommand hs ":reload"
-                        go
+                        quit hs
+                        handles <- runAgda dir
+                        mline <- sendCommand handles $ T.pack $ ":load " ++ src
+                        case mline of
+                          Nothing -> quit hs
+                          Just line -> do
+                            WS.sendTextData conn $ T.decodeUtf8 line
+                            wsMessageLoop conn handles dir
                       "command" -> do
                         mline <- sendCommand hs $ messageBody msg
                         case mline of
