@@ -68,7 +68,7 @@ readOutput h x = do
       line <- BS.hGetNonBlocking h 1024
       BS.putStr line
       let x' = x <> line
-      if BS.isSuffixOf "Main> " x' then return $ Just x' else readOutput h x'
+      if BS.isSuffixOf "Main> " x' then return $ Just $ BS.take (BS.length x' - 6) x' else readOutput h x'
 
 data Message =
     Message
@@ -83,7 +83,8 @@ instance JSON.FromJSON Message where
         <*> v JSON..: "body"
     parseJSON _ = mzero
 
-sendCommand (hin, hout, herr, ph) command = do
+sendCommand :: (Handle, Handle, Handle, ProcessHandle) -> T.Text -> IO (Maybe BS.ByteString)
+sendCommand (hin, hout, _herr, _ph) command = do
   T.putStrLn command
   T.hPutStrLn hin command
   readOutput hout ""

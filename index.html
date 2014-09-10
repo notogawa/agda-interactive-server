@@ -25,8 +25,13 @@ module Main where
 idAgda : {A : Set} → A → A
 idAgda x = ?
   </textarea>
-  <input type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value);"/>
-  <input type="button" value="Metas" onclick="agda.sendMetas();"/>
+  <input id="agda_command_reload" type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value);"/>
+  <input id="agda_command_metas" type="button" value="Metas" onclick="agda.sendMetas();"/>
+  <input id="agda_command_args_meta" type="text"/>
+  <input id="agda_command_args_expr" type="text"/>
+  <input id="agda_command_eval" type="button" value="Eval" onclick="agda.sendEval(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
+  <input id="agda_command_context" type="button" value="Context" onclick="agda.sendContext(document.getElementById('agda_command_args_meta').value);"/>
+  <input id="agda_command_refine" type="button" value="Refine" onclick="agda.sendRefine(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
 </form>
 
 <pre id="agda_prompt" style="background-color: #000; color: #FFF"></pre>
