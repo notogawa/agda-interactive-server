@@ -23,8 +23,9 @@ var agda = new Agda(proto+location.host, f, f, onMessage);
 module Main where
 
 idAgda : {A : Set} → A → A
-idAgda x = x</textarea>
-  <input type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value); agda.sendReload();"/>
+idAgda x = ?
+  </textarea>
+  <input type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value);"/>
   <input type="button" value="Metas" onclick="agda.sendMetas();"/>
 </form>
 

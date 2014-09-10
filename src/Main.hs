@@ -15,6 +15,7 @@ import qualified Data.Text.Encoding as T
 import Data.Monoid
 import qualified Data.Aeson as JSON
 import Control.Applicative
+import Control.Concurrent
 import Control.Monad
 import System.IO.Temp
 
@@ -34,10 +35,17 @@ simpleWaiApp req respond = do
     ["agda.js"] -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
     _           -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
 
+spawnPingThread :: WS.Connection -> Int -> IO ThreadId
+spawnPingThread conn interval =
+    forkIO $ forever $ do
+      threadDelay $ 1000 * 1000 * interval
+      WS.sendPing conn ("" :: BS.ByteString)
+
 simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
   putStrLn "Websocket Request received"
   conn <- WS.acceptRequest pdconn
+  _ <- spawnPingThread conn 10
   withSystemTempDirectory "ais" $ \dir -> do
     let cmd = "agda --interactive -i" ++ dir ++" -i/usr/share/agda-stdlib"
     handles@(hin, hout, _herr, _ph) <- runInteractiveCommand cmd
@@ -45,7 +53,8 @@ simpleWSServerApp pdconn = do
     hSetBuffering hin  NoBuffering
     hSetBuffering hout NoBuffering
     let src = dir ++ "/Main.agda"
-    writeFile src "module Main where"
+    T.writeFile src "module Main where"
+    putStrLn $ ":load " <> src
     hPutStrLn hin $ ":load " <> src
     _ <- readOutput hout ""
     wsMessageLoop conn handles src
@@ -74,29 +83,32 @@ instance JSON.FromJSON Message where
         <*> v JSON..: "body"
     parseJSON _ = mzero
 
+sendCommand (hin, hout, herr, ph) command = do
+  T.putStrLn command
+  T.hPutStrLn hin command
+  readOutput hout ""
+
+quit (hin, hout, herr, ph) = do
+  mapM_ hClose [hin, hout, herr]
+  _ <- waitForProcess ph
+  return ()
+
 wsMessageLoop :: WS.Connection -> (Handle, Handle, Handle, ProcessHandle) -> FilePath -> IO ()
-wsMessageLoop conn handles@(hin, hout, herr, ph) src = do
-  msgData <- WS.receiveData conn
-  print msgData
-  case JSON.decode msgData of
-    Nothing  -> putStrLn "ERROR"
-    Just msg -> case messageType msg of
-                  "source"  -> do
-                    putStrLn "source"
-                    T.writeFile src $ messageBody msg
-                    T.hPutStrLn hin $ ":reload"
-                    _ <- readOutput hout ""
-                    wsMessageLoop conn handles src
-                  "command" -> do
-                    putStrLn "command"
-                    T.hPutStrLn hin $ messageBody msg
-                    mline <- readOutput hout ""
-                    case mline of
-                      Nothing -> do
-                        mapM_ hClose [hin, hout, herr]
-                        _ <- waitForProcess ph
-                        return ()
-                      Just line -> do
-                        WS.sendTextData conn $ T.decodeUtf8 line
-                        wsMessageLoop conn handles src
-                  _ -> putStrLn "ERROR"
+wsMessageLoop conn hs src = go where
+    go = do
+      msgData <- WS.receiveData conn
+      case JSON.decode msgData of
+        Nothing  -> putStrLn "ERROR"
+        Just msg -> case messageType msg of
+                      "source"  -> do
+                        T.writeFile src $ messageBody msg
+                        _ <- sendCommand hs ":reload"
+                        go
+                      "command" -> do
+                        mline <- sendCommand hs $ messageBody msg
+                        case mline of
+                          Nothing -> quit hs
+                          Just line -> do
+                            WS.sendTextData conn $ T.decodeUtf8 line
+                            go
+                      _ -> putStrLn "ERROR"
