@@ -8,72 +8,66 @@ var Agda = (function () {
         }
         this._connection.onopen = onOpen;
         this._connection.onerror = onError;
-        this._connection.onmessage = onMessage;
+        this._connection.onmessage = function (msg) {
+            return onMessage(JSON.parse(msg.data));
+        }
     }
-    function sendSource (source) {
+    function sendLoad (source) {
         var msg = {};
-        msg.type = 'source';
-        msg.body = source;
+        msg.type = 'load';
+        msg.contents = {}
+        msg.contents.source = source;
         this._connection.send(JSON.stringify(msg));
-    }
-    function sendCommand (cmd) {
-        var msg = {};
-        msg.type = 'command';
-        msg.body = cmd;
-        this._connection.send(JSON.stringify(msg));
-    }
-    function sendQuit () {
-        sendCommand.call(this, ':?');
-    }
-    function sendReload () {
-        sendCommand.call(this, ':reload');
     }
     function sendConstraints () {
-        sendCommand.call(this, ':constraints');
+        var msg = {};
+        msg.type = 'constraints';
+        this._connection.send(JSON.stringify(msg));
     }
-    function sendContext (meta) {
-        sendCommand.call(this, ':Context '+meta);
+    function sendSolveAll () {
+        var msg = {};
+        msg.type = 'solveAll';
+        this._connection.send(JSON.stringify(msg));
     }
     function sendGive (meta, expr) {
-        sendCommand.call(this, ':give '+meta+' '+expr);
+        var msg = {};
+        msg.type = 'give';
+        msg.contents = {};
+        msg.contents.meta = parseInt(meta, 10);
+        msg.contents.expr = expr;
+        this._connection.send(JSON.stringify(msg));
     }
     function sendRefine (meta, expr) {
-        sendCommand.call(this, ':Refine '+meta+' '+expr);
+        var msg = {};
+        msg.type = 'refine';
+        msg.contents = {};
+        msg.contents.meta = parseInt(meta, 10);
+        msg.contents.expr = expr;
+        this._connection.send(JSON.stringify(msg));
     }
     function sendMetas () {
-        sendCommand.call(this, ':metas');
+        var msg = {};
+        msg.type = 'metas';
+        this._connection.send(JSON.stringify(msg));
     }
-    function sendEval (meta, expr) {
-        sendCommand.call(this, ':eval '+meta+' '+expr);
-    }
-    function sendTypeOf () {
-        sendCommand.call(this, ':typeOf');
-    }
-    function sendTypeIn (meta, expr) {
-        sendCommand.call(this, ':typeIn '+meta+' '+expr);
-    }
-    function sendWakeup () {
-        sendCommand.call(this, ':wakeup');
-    }
-    function sendScope () {
-        sendCommand.call(this, ':scope');
+    function sendAuto (meta, expr) {
+        var msg = {};
+        msg.type = 'auto';
+        msg.contents = {};
+        msg.contents.meta = parseInt(meta, 10);
+        msg.contents.expr = expr;
+        this._connection.send(JSON.stringify(msg));
     }
 
     Agda.prototype = {
         constructor: Agda,
-        sendQuit: sendQuit,
-        sendReload: sendReload,
+        sendLoad: sendLoad,
         sendConstraints: sendConstraints,
-        sendContext: sendContext,
+        sendSolveAll: sendSolveAll,
         sendGive: sendGive,
         sendRefine: sendRefine,
         sendMetas: sendMetas,
-        sendEval: sendEval,
-        sendTypeOf: sendTypeOf,
-        sendTypeIn: sendTypeIn,
-        sendWakeup: sendWakeup,
-        sendScope: sendScope,
-        sendSource: sendSource
+        sendAuto: sendAuto
     };
 
     return Agda;

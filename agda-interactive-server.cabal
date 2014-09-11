@@ -25,7 +25,6 @@ executable agda-interactive-server
                      , wai-websockets >=3.0 && <3.1
                      , websockets
                      , http-types
-                     , process
                      , bytestring
                      , text
                      , aeson

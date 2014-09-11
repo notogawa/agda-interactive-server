@@ -6,13 +6,11 @@ import qualified Network.Wai.Handler.Warp as Warp
 import qualified Network.Wai.Handler.WebSockets as WaiWS
 import qualified Network.WebSockets as WS
 import qualified Network.HTTP.Types.Status as Status
-import System.IO
-import System.Process
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as T
-import Data.Monoid
 import qualified Data.Aeson as JSON
 import Control.Applicative
 import Control.Concurrent
@@ -24,9 +22,10 @@ import qualified Agda.TypeChecking.Monad as Agda
 import qualified Agda.Interaction.Response as Agda
 import qualified Agda.Interaction.InteractionTop as Agda
 import qualified Agda.Interaction.Highlighting.Precise as Agda
+import qualified Agda.Syntax.Common as Agda
+import qualified Agda.Syntax.Position as Agda
 
-instance JSON.ToJSON Agda.CompressedFile where
-
+-- instance JSON.ToJSON Agda.CompressedFile where
 
 top :: WS.Connection -> String -> Agda.TCM ()
 top conn dir = do
@@ -40,25 +39,47 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
     run = Agda.runInteraction . Agda.IOTCM src Agda.NonInteractive Agda.Indirect
     dispatch' Nothing = error ""
     dispatch' (Just msg) =
-        case messageType msg of
-          "source"  -> do
-            liftIO $ T.writeFile src $ messageBody msg
+        case msg of
+          MessageLoad source -> do
+            liftIO $ T.writeFile src source
             run (Agda.Cmd_load src [dir, "/usr/share/agda-stdlib"])
             dispatch conn dir
-          "command" -> do
+          MessageMetas -> do
             run (Agda.Cmd_metas)
             dispatch conn dir
-          _ -> error ""
+          MessageSolveAll -> do
+            run (Agda.Cmd_solveAll)
+            dispatch conn dir
+          MessageConstraints -> do
+            run (Agda.Cmd_constraints)
+            dispatch conn dir
+          MessageGive iid range expr -> do
+            run (Agda.Cmd_give iid range expr)
+            dispatch conn dir
 
 response :: WS.Connection -> Agda.Response -> Agda.TCM ()
 response _conn (Agda.Resp_HighlightingInfo highlightingInfo moduleToSource) = liftIO $ print ("Resp_HighlightingInfo", highlightingInfo, moduleToSource)
 response _conn (Agda.Resp_Status status) = liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
 response _conn (Agda.Resp_JumpToError filePath n) = liftIO $ print (filePath, n)
-response _conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ print interactionIds
+response  conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+          [ "type" JSON..= ("metas" :: String)
+          , "contents" JSON..=
+            JSON.object
+            [ "metas" JSON..= map fromEnum interactionIds
+            ]
+          ]
 response _conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ putStrLn "Resp_GiveAction"
 response _conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ putStrLn "Resp_MakeCase"
 response _conn (Agda.Resp_SolveAll interactionIdAndExprs) = liftIO $ print interactionIdAndExprs
-response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.pack $ toMsg displayInfo where
+response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+          [ "type" JSON..= ("displayInfo" :: String)
+          , "contents" JSON..=
+            JSON.object
+            [ "info" JSON..= toMsg displayInfo
+            ]
+          ]
     toMsg (Agda.Info_CompilationOk) = "Info_CompilationOk"
     toMsg (Agda.Info_Constraints constraints) = constraints
     toMsg (Agda.Info_AllGoals allGoals) = allGoals
@@ -73,7 +94,15 @@ response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData co
     toMsg (Agda.Info_InferredType doc) = show doc
     toMsg (Agda.Info_Context doc) = show doc
     toMsg (Agda.Info_HelperFunction doc) = show doc
-response  conn (Agda.Resp_RunningInfo _debugLebel message) = liftIO $ WS.sendTextData conn $ T.pack message
+response  conn (Agda.Resp_RunningInfo debugLebel message) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+          [ "type" JSON..= ("runningInfo" :: String)
+          , "contents" JSON..=
+            JSON.object
+            [ "message" JSON..= message
+            , "debugLevel" JSON..= debugLebel
+            ]
+          ]
 response _conn (Agda.Resp_ClearRunningInfo) = return ()
 response _conn (Agda.Resp_ClearHighlighting) = return ()
 
@@ -99,15 +128,6 @@ spawnPingThread conn interval =
       threadDelay $ 1000 * 1000 * interval
       WS.sendPing conn ("" :: BS.ByteString)
 
-runAgda :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
-runAgda dir = do
-  let cmd = "agda --interactive -i" ++ dir ++" -i/usr/share/agda-stdlib"
-  handles@(hin, hout, _herr, _ph) <- runInteractiveCommand cmd
-  _ <- readOutput hout ""
-  hSetBuffering hin  NoBuffering
-  hSetBuffering hout NoBuffering
-  return handles
-
 simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
   putStrLn "Websocket Request received"
@@ -116,68 +136,26 @@ simpleWSServerApp pdconn = do
   withSystemTempDirectory "ais" $ \dir -> do
     _ <- Agda.runTCMTop $ top conn dir
     return ()
-    -- handles <- runAgda dir
-    -- wsMessageLoop conn handles dir
 
-readOutput :: Handle -> BS.ByteString -> IO (Maybe BS.ByteString)
-readOutput h x = do
-  eof <- hIsEOF h
-  if eof
-    then return Nothing
-    else do
-      line <- BS.hGetNonBlocking h 1024
-      BS.putStr line
-      let x' = x <> line
-      if BS.isSuffixOf "Main> " x' then return $ Just $ BS.take (BS.length x' - 6) x' else readOutput h x'
-
-data Message =
-    Message
-    { messageType :: T.Text
-    , messageBody :: T.Text
-    } deriving (Eq, Show)
+data Message = MessageLoad T.Text
+             | MessageMetas
+             | MessageSolveAll
+             | MessageConstraints
+             | MessageGive Agda.InteractionId Agda.Range String
+               deriving (Eq, Show)
 
 instance JSON.FromJSON Message where
-    parseJSON (JSON.Object v) =
-        Message
-        <$> v JSON..: "type"
-        <*> v JSON..: "body"
+    parseJSON (JSON.Object v) = do
+      t <- v JSON..: "type"
+      case t :: T.Text of
+        "load" -> MessageLoad
+                  <$> (v JSON..: "contents" >>= (JSON..: "source"))
+        "metas" -> return MessageMetas
+        "solveAll" -> return MessageSolveAll
+        "constraints" -> return MessageConstraints
+        "give" -> MessageGive
+                  <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
+                  <*> return Agda.noRange
+                  <*> (v JSON..: "contents" >>= (JSON..: "expr"))
+        _ -> mzero
     parseJSON _ = mzero
-
-sendCommand :: (Handle, Handle, Handle, ProcessHandle) -> T.Text -> IO (Maybe BS.ByteString)
-sendCommand (hin, hout, _herr, _ph) command = do
-  T.putStrLn command
-  T.hPutStrLn hin command
-  readOutput hout ""
-
-quit :: (Handle, Handle, Handle, ProcessHandle) -> IO ()
-quit (hin, hout, herr, ph) = do
-  mapM_ hClose [hin, hout, herr]
-  _ <- waitForProcess ph
-  return ()
-
-wsMessageLoop :: WS.Connection -> (Handle, Handle, Handle, ProcessHandle) -> FilePath -> IO ()
-wsMessageLoop conn hs dir = go where
-    src = dir ++ "/Main.agda"
-    go = do
-      msgData <- WS.receiveData conn
-      case JSON.decode msgData of
-        Nothing  -> putStrLn "ERROR"
-        Just msg -> case messageType msg of
-                      "source"  -> do
-                        T.writeFile src $ messageBody msg
-                        quit hs
-                        handles <- runAgda dir
-                        mline <- sendCommand handles $ T.pack $ ":load " ++ src
-                        case mline of
-                          Nothing -> quit hs
-                          Just line -> do
-                            WS.sendTextData conn $ T.decodeUtf8 line
-                            wsMessageLoop conn handles dir
-                      "command" -> do
-                        mline <- sendCommand hs $ messageBody msg
-                        case mline of
-                          Nothing -> quit hs
-                          Just line -> do
-                            WS.sendTextData conn $ T.decodeUtf8 line
-                            go
-                      _ -> putStrLn "ERROR"

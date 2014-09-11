@@ -9,11 +9,30 @@
 
 <script type=text/javascript>
 var f = function (x) {};
+var onOpen = function () {
+    return agda.sendLoad(document.getElementById('agda_buffer').value);
+}
+var onError = function (e) {
+    console.log(e);
+}
 var onMessage = function (msg) {
-    document.getElementById('agda_prompt').innerText += msg.data;
+    if (msg.type == 'runningInfo') {
+        document.getElementById('agda_prompt').innerText += msg.contents.message;
+    } else if (msg.type == 'metas') {
+        var sel = document.getElementById('agda_command_args_meta');
+        for (var i = sel.childNodes.length - 1; i >= 0; i--) {
+            sel.removeChild(sel.childNodes[i]);
+        }
+        for (var i = 0; i < msg.contents.metas.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = msg.contents.metas[i];
+            opt.innerText = msg.contents.metas[i];
+            sel.appendChild(opt);
+        }
+    }
 };
 var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
-var agda = new Agda(proto+location.host, f, f, onMessage);
+var agda = new Agda(proto+location.host, onOpen, onError, onMessage);
 </script>
 
 <pre id="log"></pre>
@@ -22,16 +41,37 @@ var agda = new Agda(proto+location.host, f, f, onMessage);
   <textarea id="agda_buffer" style="width: 100%; height: 200px;">
 module Main where
 
-idAgda : {A : Set} → A → A
-idAgda x = ?
+import Relation.Binary.PropositionalEquality as PropEq
+open PropEq using (_≡_; refl; sym; cong; trans)
+
+data day : Set where
+  monday : day
+  tuesday : day
+  wednesday : day
+  thursday : day
+  friday : day
+  saturday : day
+  sunday : day
+
+next-weekday : day → day
+next-weekday monday = tuesday
+next-weekday tuesday = wednesday
+next-weekday wednesday = thursday
+next-weekday thursday = friday
+next-weekday friday = monday
+next-weekday saturday = monday
+next-weekday sunday = monday
+
+test-next-weekday : next-weekday (next-weekday saturday) ≡ tuesday
+test-next-weekday = ?
   </textarea>
-  <input id="agda_command_reload" type="button" value="Reload" onclick="agda.sendSource(document.getElementById('agda_buffer').value);"/>
+  <input id="agda_command_reload" type="button" value="Reload" onclick="agda.sendLoad(document.getElementById('agda_buffer').value);"/>
   <input id="agda_command_metas" type="button" value="Metas" onclick="agda.sendMetas();"/>
-  <input id="agda_command_args_meta" type="text"/>
+  <select id="agda_command_args_meta" type="text"/></select>
   <input id="agda_command_args_expr" type="text"/>
-  <input id="agda_command_eval" type="button" value="Eval" onclick="agda.sendEval(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
-  <input id="agda_command_context" type="button" value="Context" onclick="agda.sendContext(document.getElementById('agda_command_args_meta').value);"/>
-  <input id="agda_command_refine" type="button" value="Refine" onclick="agda.sendRefine(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
+  <input id="agda_command_give" type="button" value="Give" onclick="agda.sendGive(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
+  <input id="agda_command_solveAll" type="button" value="SolveAll" onclick="agda.sendSolveAll();"/>
+  <input id="agda_command_constraints" type="button" value="Constraints" onclick="agda.sendConstraints();"/>
 </form>
 
 <pre id="agda_prompt" style="background-color: #000; color: #FFF"></pre>
