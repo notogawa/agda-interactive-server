@@ -10,7 +10,7 @@
 <script type=text/javascript>
 var f = function (x) {};
 var onMessage = function (msg) {
-    document.getElementById('agda_prompt').innerText = msg.data;
+    document.getElementById('agda_prompt').innerText += msg.data;
 };
 var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
 var agda = new Agda(proto+location.host, f, f, onMessage);

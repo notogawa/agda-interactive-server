@@ -17,7 +17,65 @@ import qualified Data.Aeson as JSON
 import Control.Applicative
 import Control.Concurrent
 import Control.Monad
+import Control.Monad.State
 import System.IO.Temp
+
+import qualified Agda.TypeChecking.Monad as Agda
+import qualified Agda.Interaction.Response as Agda
+import qualified Agda.Interaction.InteractionTop as Agda
+import qualified Agda.Interaction.Highlighting.Precise as Agda
+
+instance JSON.ToJSON Agda.CompressedFile where
+
+
+top :: WS.Connection -> String -> Agda.TCM ()
+top conn dir = do
+  Agda.setInteractionOutputCallback $ response conn
+  _ <- dispatch conn dir `runStateT` Agda.initCommandState
+  return ()
+
+dispatch :: WS.Connection -> String -> Agda.CommandM ()
+dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode where
+    src = dir ++ "/Main.agda"
+    run = Agda.runInteraction . Agda.IOTCM src Agda.NonInteractive Agda.Indirect
+    dispatch' Nothing = error ""
+    dispatch' (Just msg) =
+        case messageType msg of
+          "source"  -> do
+            liftIO $ T.writeFile src $ messageBody msg
+            run (Agda.Cmd_load src [dir, "/usr/share/agda-stdlib"])
+            dispatch conn dir
+          "command" -> do
+            run (Agda.Cmd_metas)
+            dispatch conn dir
+          _ -> error ""
+
+response :: WS.Connection -> Agda.Response -> Agda.TCM ()
+response _conn (Agda.Resp_HighlightingInfo highlightingInfo moduleToSource) = liftIO $ print ("Resp_HighlightingInfo", highlightingInfo, moduleToSource)
+response _conn (Agda.Resp_Status status) = liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
+response _conn (Agda.Resp_JumpToError filePath n) = liftIO $ print (filePath, n)
+response _conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ print interactionIds
+response _conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ putStrLn "Resp_GiveAction"
+response _conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ putStrLn "Resp_MakeCase"
+response _conn (Agda.Resp_SolveAll interactionIdAndExprs) = liftIO $ print interactionIdAndExprs
+response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.pack $ toMsg displayInfo where
+    toMsg (Agda.Info_CompilationOk) = "Info_CompilationOk"
+    toMsg (Agda.Info_Constraints constraints) = constraints
+    toMsg (Agda.Info_AllGoals allGoals) = allGoals
+    toMsg (Agda.Info_Error e) = e -- When an error message is displayed this constructor should be used, if appropriate.
+    toMsg (Agda.Info_Intro doc) = show doc -- Info_Intro denotes two different types of errors TODO: split these into separate constructors
+    toMsg (Agda.Info_Auto auto) = auto -- Info_Auto denotes either an error or a success (when Resp_GiveAction is present) TODO: split these into separate constructors
+    toMsg (Agda.Info_ModuleContents doc) = show doc
+    toMsg (Agda.Info_WhyInScope doc) = show doc
+    toMsg (Agda.Info_NormalForm doc) = show doc
+    toMsg (Agda.Info_GoalType doc) = show doc
+    toMsg (Agda.Info_CurrentGoal doc) = show doc
+    toMsg (Agda.Info_InferredType doc) = show doc
+    toMsg (Agda.Info_Context doc) = show doc
+    toMsg (Agda.Info_HelperFunction doc) = show doc
+response  conn (Agda.Resp_RunningInfo _debugLebel message) = liftIO $ WS.sendTextData conn $ T.pack message
+response _conn (Agda.Resp_ClearRunningInfo) = return ()
+response _conn (Agda.Resp_ClearHighlighting) = return ()
 
 main :: IO ()
 main = do
@@ -56,8 +114,10 @@ simpleWSServerApp pdconn = do
   conn <- WS.acceptRequest pdconn
   _ <- spawnPingThread conn 10
   withSystemTempDirectory "ais" $ \dir -> do
-    handles <- runAgda dir
-    wsMessageLoop conn handles dir
+    _ <- Agda.runTCMTop $ top conn dir
+    return ()
+    -- handles <- runAgda dir
+    -- wsMessageLoop conn handles dir
 
 readOutput :: Handle -> BS.ByteString -> IO (Maybe BS.ByteString)
 readOutput h x = do
