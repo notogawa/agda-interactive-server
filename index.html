@@ -3,39 +3,8 @@
 <title>Agda WebSocket Test</title>
 <head>
   <meta charset="UTF-8">
-  <script src="agda.js"></script>
 </head>
 <body>
-
-<script type=text/javascript>
-var f = function (x) {};
-var onOpen = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').value);
-}
-var onError = function (e) {
-    console.log(e);
-}
-var onMessage = function (msg) {
-    if (msg.type == 'runningInfo') {
-        document.getElementById('agda_prompt').innerText += msg.contents.message;
-    } else if (msg.type == 'metas') {
-        var sel = document.getElementById('agda_command_args_meta');
-        for (var i = sel.childNodes.length - 1; i >= 0; i--) {
-            sel.removeChild(sel.childNodes[i]);
-        }
-        for (var i = 0; i < msg.contents.metas.length; i++) {
-            var opt = document.createElement('option');
-            opt.value = msg.contents.metas[i];
-            opt.innerText = msg.contents.metas[i];
-            sel.appendChild(opt);
-        }
-    }
-};
-var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
-var agda = new Agda(proto+location.host, onOpen, onError, onMessage);
-</script>
-
-<pre id="log"></pre>
 
 <form onsubmit="return false;">
   <textarea id="agda_buffer" style="width: 100%; height: 200px;">
@@ -65,16 +34,18 @@ next-weekday sunday = monday
 test-next-weekday : next-weekday (next-weekday saturday) ≡ tuesday
 test-next-weekday = ?
   </textarea>
-  <input id="agda_command_reload" type="button" value="Reload" onclick="agda.sendLoad(document.getElementById('agda_buffer').value);"/>
-  <input id="agda_command_metas" type="button" value="Metas" onclick="agda.sendMetas();"/>
+  <input id="agda_command_reload" type="button" value="Reload"/>
+  <input id="agda_command_metas" type="button" value="Metas"/>
   <select id="agda_command_args_meta" type="text"/></select>
   <input id="agda_command_args_expr" type="text"/>
-  <input id="agda_command_give" type="button" value="Give" onclick="agda.sendGive(document.getElementById('agda_command_args_meta').value, document.getElementById('agda_command_args_expr').value);"/>
-  <input id="agda_command_solveAll" type="button" value="SolveAll" onclick="agda.sendSolveAll();"/>
-  <input id="agda_command_constraints" type="button" value="Constraints" onclick="agda.sendConstraints();"/>
+  <input id="agda_command_give" type="button" value="Give"/>
+  <input id="agda_command_solveAll" type="button" value="SolveAll"/>
+  <input id="agda_command_constraints" type="button" value="Constraints"/>
 </form>
 
 <pre id="agda_prompt" style="background-color: #000; color: #FFF"></pre>
 
 </body>
+<script src="agda.js"></script>
+<script src="ui.js"></script>
 </html>

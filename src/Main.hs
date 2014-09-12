@@ -120,6 +120,7 @@ simpleWaiApp :: Wai.Application
 simpleWaiApp req respond = do
   case Wai.pathInfo $ req of
     ["agda.js"] -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
+    ["ui.js"]   -> respond $ Wai.responseFile Status.status200 [] "ui.js" Nothing
     _           -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
