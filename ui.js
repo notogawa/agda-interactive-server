@@ -1,7 +1,7 @@
 var f = function (x) {};
 
 var onOpen = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').value);
+    return agda.sendLoad(document.getElementById('agda_buffer').innerText);
 }
 
 var onError = function (e) {
@@ -29,7 +29,7 @@ var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
 var agda = new Agda(proto+location.host, onOpen, onError, onMessage);
 
 document.getElementById('agda_command_reload').onclick = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').value);
+    return agda.sendLoad(document.getElementById('agda_buffer').innerText);
 }
 document.getElementById('agda_command_metas').onclick = function () {
     return agda.sendMetas();

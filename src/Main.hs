@@ -22,6 +22,7 @@ import qualified Agda.TypeChecking.Monad as Agda
 import qualified Agda.Interaction.Response as Agda
 import qualified Agda.Interaction.InteractionTop as Agda
 import qualified Agda.Interaction.Highlighting.Precise as Agda
+import qualified Agda.Interaction.Highlighting.Range as Highlight
 import qualified Agda.Syntax.Common as Agda
 import qualified Agda.Syntax.Position as Agda
 
@@ -58,7 +59,24 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
             dispatch conn dir
 
 response :: WS.Connection -> Agda.Response -> Agda.TCM ()
-response _conn (Agda.Resp_HighlightingInfo highlightingInfo moduleToSource) = liftIO $ print ("Resp_HighlightingInfo", highlightingInfo, moduleToSource)
+response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+      [ "type" JSON..= ("highlight" :: String)
+      , "contents" JSON..=
+        [ JSON.object
+          [ "range" JSON..=
+            JSON.object
+            [ "from" JSON..= Highlight.from range
+            , "to" JSON..= Highlight.to range
+            ]
+          , "meta" JSON..=
+            JSON.object
+            [ "aspect" JSON..= (fmap show $ Agda.aspect meta)
+            ]
+          ]
+        | (range, meta) <- Agda.ranges highlightingInfo
+        ]
+      ]
 response _conn (Agda.Resp_Status status) = liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
 response _conn (Agda.Resp_JumpToError filePath n) = liftIO $ print (filePath, n)
 response  conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
