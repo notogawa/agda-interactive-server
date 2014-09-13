@@ -21,7 +21,7 @@ import System.IO.Temp
 import qualified Agda.TypeChecking.Monad as Agda
 import qualified Agda.Interaction.Response as Agda
 import qualified Agda.Interaction.InteractionTop as Agda
-import qualified Agda.Interaction.Highlighting.Precise as Agda
+import qualified Agda.Interaction.Highlighting.Precise as Highlight
 import qualified Agda.Interaction.Highlighting.Range as Highlight
 import qualified Agda.Syntax.Common as Agda
 import qualified Agda.Syntax.Position as Agda
@@ -71,12 +71,20 @@ response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = l
             ]
           , "meta" JSON..=
             JSON.object
-            [ "aspect" JSON..= (fmap show $ Agda.aspect meta)
+            [ "aspect" JSON..= fromAspect (Highlight.aspect meta)
             ]
           ]
-        | (range, meta) <- Agda.ranges highlightingInfo
+        | (range, meta) <- Highlight.ranges highlightingInfo
         ]
       ]
+    fromAspect :: Maybe Highlight.Aspect -> Maybe String
+    fromAspect (Just (Highlight.Name nameKind _)) = fromNameKind nameKind
+    fromAspect x = fmap show x
+    fromNameKind :: Maybe Highlight.NameKind -> Maybe String
+    fromNameKind (Just (Highlight.Constructor Agda.Inductive)) = Just "InductiveConstructor"
+    fromNameKind (Just (Highlight.Constructor Agda.CoInductive)) = Just "CoinductiveConstructor"
+    fromNameKind x = fmap show x
+
 response _conn (Agda.Resp_Status status) = liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
 response _conn (Agda.Resp_JumpToError filePath n) = liftIO $ print (filePath, n)
 response  conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
@@ -137,9 +145,10 @@ simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerAp
 simpleWaiApp :: Wai.Application
 simpleWaiApp req respond = do
   case Wai.pathInfo $ req of
-    ["agda.js"] -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
-    ["ui.js"]   -> respond $ Wai.responseFile Status.status200 [] "ui.js" Nothing
-    _           -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
+    ["agda.js"]  -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
+    ["ui.js"]    -> respond $ Wai.responseFile Status.status200 [] "ui.js" Nothing
+    ["agda.css"] -> respond $ Wai.responseFile Status.status200 [] "agda.css" Nothing
+    _            -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
 spawnPingThread conn interval =
