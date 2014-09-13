@@ -1,7 +1,15 @@
 var f = function (x) {};
 
+var text = function (element) {
+    if (typeof element.textContent != 'undefined') {
+        return element.textContent;
+    } else {
+        return element.innerText;
+    }
+}
+
 var onOpen = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').innerHTML);
+    return agda.sendLoad(text(document.getElementById('agda_buffer')));
 }
 
 var onError = function (e) {
@@ -34,14 +42,6 @@ var mergeHighlights = function (currentHighlights, updateHighlights) {
         mergedHighlights = mergedHighlights.concat(updateHighlights);
     }
     return mergedHighlights;
-}
-
-var text = function (element) {
-    if (typeof element.textContent != 'undefined') {
-        return element.textContent;
-    } else {
-        return element.innerText;
-    }
 }
 
 var onMessage = function (msg) {
@@ -92,7 +92,7 @@ var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
 var agda = new Agda(proto+location.host, onOpen, onError, onMessage);
 
 document.getElementById('agda_command_reload').onclick = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').innerHTML);
+    return agda.sendLoad(text(document.getElementById('agda_buffer')));
 }
 document.getElementById('agda_command_metas').onclick = function () {
     return agda.sendMetas();
