@@ -1,7 +1,7 @@
 var f = function (x) {};
 
 var onOpen = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').innerText);
+    return agda.sendLoad(document.getElementById('agda_buffer').innerHTML);
 }
 
 var onError = function (e) {
@@ -36,9 +36,17 @@ var mergeHighlights = function (currentHighlights, updateHighlights) {
     return mergedHighlights;
 }
 
+var text = function (element) {
+    if (typeof element.textContent != 'undefined') {
+        return element.textContent;
+    } else {
+        return element.innerText;
+    }
+}
+
 var onMessage = function (msg) {
     if (msg.type == 'runningInfo') {
-        document.getElementById('agda_prompt').innerText += msg.contents.message;
+        document.getElementById('agda_prompt').innerHTML += msg.contents.message;
     } else if (msg.type == 'metas') {
         var sel = document.getElementById('agda_command_args_meta');
         for (var i = sel.childNodes.length - 1; i >= 0; i--) {
@@ -47,13 +55,13 @@ var onMessage = function (msg) {
         for (var i = 0; i < msg.contents.metas.length; i++) {
             var opt = document.createElement('option');
             opt.value = msg.contents.metas[i];
-            opt.innerText = msg.contents.metas[i];
+            opt.innerHTML = msg.contents.metas[i];
             sel.appendChild(opt);
         }
     } else if (msg.type == 'highlight') {
         highlights = mergeHighlights(highlights, msg.contents);
         var buf = document.getElementById('agda_buffer');
-        var source = buf.innerText;
+        var source = text(buf).replace(/\r\n?/g,"\n");
         for (var i = buf.childNodes.length - 1; i >= 0; i--) {
             buf.removeChild(buf.childNodes[i]);
         }
@@ -61,20 +69,20 @@ var onMessage = function (msg) {
         for (var i = 0; i < highlights.length; i++) {
             if (cur < highlights[i].range.from-1) {
                 var span = document.createElement('span');
-                span.innerText = source.substring(cur, highlights[i].range.from-1);
+                span.innerHTML = source.substring(cur, highlights[i].range.from-1);
                 buf.appendChild(span);
                 cur = highlights[i].range.from-1;
             }
             if (cur < highlights[i].range.to-1) {
                 var span = document.createElement('span');
-                span.innerText = source.substring(cur, highlights[i].range.to-1);
+                span.innerHTML = source.substring(cur, highlights[i].range.to-1);
                 span.className = highlights[i].meta.aspect;
                 buf.appendChild(span);
                 cur = highlights[i].range.to-1;
             }
         }
         var span = document.createElement('span');
-        span.innerText = source.substring(cur, source.length);
+        span.innerHTML = source.substring(cur, source.length);
         buf.appendChild(span);
         cur = source.substring(cur, source.length);
     }
@@ -84,7 +92,7 @@ var proto = (location.protocol == 'http:') ? 'ws://' : 'wss://';
 var agda = new Agda(proto+location.host, onOpen, onError, onMessage);
 
 document.getElementById('agda_command_reload').onclick = function () {
-    return agda.sendLoad(document.getElementById('agda_buffer').innerText);
+    return agda.sendLoad(document.getElementById('agda_buffer').innerHTML);
 }
 document.getElementById('agda_command_metas').onclick = function () {
     return agda.sendMetas();

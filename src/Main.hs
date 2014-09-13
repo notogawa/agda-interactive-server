@@ -6,6 +6,7 @@ import qualified Network.Wai.Handler.Warp as Warp
 import qualified Network.Wai.Handler.WebSockets as WaiWS
 import qualified Network.WebSockets as WS
 import qualified Network.HTTP.Types.Status as Status
+import qualified Network.HTTP.Types.Header as Header
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
@@ -145,10 +146,10 @@ simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerAp
 simpleWaiApp :: Wai.Application
 simpleWaiApp req respond = do
   case Wai.pathInfo $ req of
-    ["agda.js"]  -> respond $ Wai.responseFile Status.status200 [] "agda.js" Nothing
-    ["ui.js"]    -> respond $ Wai.responseFile Status.status200 [] "ui.js" Nothing
-    ["agda.css"] -> respond $ Wai.responseFile Status.status200 [] "agda.css" Nothing
-    _            -> respond $ Wai.responseFile Status.status200 [] "index.html" Nothing
+    ["agda.js"]  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
+    ["ui.js"]    -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
+    ["agda.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "agda.css" Nothing
+    _            -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] "index.html" Nothing
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
 spawnPingThread conn interval =
