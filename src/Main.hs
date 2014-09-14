@@ -104,7 +104,7 @@ response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData co
           [ "type" JSON..= ("displayInfo" :: String)
           , "contents" JSON..=
             JSON.object
-            [ "info" JSON..= toMsg displayInfo
+            [ "information" JSON..= toMsg displayInfo
             ]
           ]
     toMsg (Agda.Info_CompilationOk) = "Info_CompilationOk"
@@ -126,7 +126,7 @@ response  conn (Agda.Resp_RunningInfo debugLebel message) = liftIO $ WS.sendText
           [ "type" JSON..= ("runningInfo" :: String)
           , "contents" JSON..=
             JSON.object
-            [ "message" JSON..= message
+            [ "information" JSON..= message
             , "debugLevel" JSON..= debugLebel
             ]
           ]

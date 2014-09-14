@@ -46,7 +46,9 @@ var mergeHighlights = function (currentHighlights, updateHighlights) {
 
 var onMessage = function (msg) {
     if (msg.type == 'runningInfo') {
-        document.getElementById('agda_prompt').innerHTML += msg.contents.message;
+        document.getElementById('agda_prompt').innerHTML += msg.contents.information;
+    } else if (msg.type == 'displayInfo') {
+        document.getElementById('agda_prompt').innerHTML += msg.contents.information + "\n";
     } else if (msg.type == 'metas') {
         var sel = document.getElementById('agda_command_args_meta');
         for (var i = sel.childNodes.length - 1; i >= 0; i--) {
