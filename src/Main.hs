@@ -146,10 +146,11 @@ simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerAp
 simpleWaiApp :: Wai.Application
 simpleWaiApp req respond = do
   case Wai.pathInfo $ req of
-    ["agda.js"]  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
-    ["ui.js"]    -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
-    ["agda.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "agda.css" Nothing
-    _            -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] "index.html" Nothing
+    ["jquery.js"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery.js" Nothing
+    ["agda.js"]   -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
+    ["ui.js"]     -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
+    ["agda.css"]  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "agda.css" Nothing
+    _             -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] "index.html" Nothing
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
 spawnPingThread conn interval =
