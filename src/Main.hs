@@ -96,7 +96,18 @@ response  conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ WS.sendTe
             [ "metas" JSON..= map fromEnum interactionIds
             ]
           ]
-response _conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ putStrLn "Resp_GiveAction"
+response  conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+          [ "type" JSON..= ("give" :: String)
+          , "contents" JSON..=
+            JSON.object
+            [ "meta" JSON..= fromEnum interactionId
+            , "result" JSON..= case giveResult of
+                                 Agda.Give_String str -> str
+                                 Agda.Give_Paren      -> "Give_Paren"   -- TODO: fix
+                                 Agda.Give_NoParen    -> "Give_NoParen" -- TODO: fix
+            ]
+          ]
 response _conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ putStrLn "Resp_MakeCase"
 response _conn (Agda.Resp_SolveAll interactionIdAndExprs) = liftIO $ print interactionIdAndExprs
 response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
