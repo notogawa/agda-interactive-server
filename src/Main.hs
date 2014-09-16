@@ -174,8 +174,8 @@ simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
   putStrLn "Websocket Request received"
   conn <- WS.acceptRequest pdconn
-  _ <- spawnPingThread conn 10
   withSystemTempDirectory "ais" $ \dir -> do
+    _ <- spawnPingThread conn 10
     _ <- Agda.runTCMTop $ top conn dir
     return ()
 
