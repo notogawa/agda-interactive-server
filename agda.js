@@ -1,5 +1,6 @@
 var Agda = (function () {
-    function Agda (remoteHost, onOpen, onError, onMessage) {
+    function Agda (remoteHost, onOpen, onError,
+                   onRunningInfo, onDisplayInfo, onMetas, onHighlight) {
         this._debug = (typeof debug === 'undefined') ? false : true;
         try {
             this._connection = new WebSocket(remoteHost);
@@ -8,8 +9,17 @@ var Agda = (function () {
         }
         this._connection.onopen = onOpen;
         this._connection.onerror = onError;
-        this._connection.onmessage = function (msg) {
-            return onMessage(JSON.parse(msg.data));
+        this._connection.onmessage = function (msgData) {
+            var msg = JSON.parse(msgData.data);
+            if (msg.type == 'runningInfo') {
+                return onRunningInfo(msg.contents);
+            } else if (msg.type == 'displayInfo') {
+                return onDisplayInfo(msg.contents);
+            } else if (msg.type == 'metas') {
+                return onMetas(msg.contents);
+            } else if (msg.type == 'highlight') {
+                return onHighlight(msg.contents);
+            }
         }
     }
     function sendLoad (source) {

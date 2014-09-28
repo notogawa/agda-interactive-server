@@ -36,47 +36,48 @@ $(document).ready(function() {
             console.log(e);
         },
         function (msg) {
-            if (msg.type == 'runningInfo') {
-                $('#agda_prompt').append(msg.contents.information);
-            } else if (msg.type == 'displayInfo') {
-                $('#agda_prompt').append(msg.contents.information + "\n");
-            } else if (msg.type == 'metas') {
-                var sel = $('#agda_command_args_meta');
-                sel.empty();
-                msg.contents.metas.forEach(function (meta) {
-                    var opt = $('<option>');
-                    opt.attr('value', meta);
-                    opt.append(meta);
-                    sel.append(opt);
-                });
-            } else if (msg.type == 'highlight') {
-                highlights = mergeHighlights(highlights, msg.contents);
-                var buf = $('#agda_buffer');
-                var source = buf.text().replace(/\r\n?/g,'\n');
-                buf.empty();
-                var cur = 0;
-                highlights.forEach(function (highlight) {
-                    var from = highlight.range.from - 1;
-                    if (cur < from) {
-                        var span = $('<span>');
-                        span.append(source.substring(cur, from));
-                        buf.append(span);
-                        cur = from;
-                    }
-                    var to = highlight.range.to - 1;
-                    if (cur < to) {
-                        var span = $('<span>');
-                        span.append(source.substring(cur, to));
-                        span.addClass(highlight.meta.aspect);
-                        buf.append(span);
-                        cur = to;
-                    }
-                });
-                var span = $('<span>');
-                span.append(source.substring(cur, source.length));
-                buf.append(span);
-                cur = source.substring(cur, source.length);
-            }
+            $('#agda_prompt').append(msg.information);
+        },
+        function (msg) {
+            $('#agda_prompt').append(msg.information + "\n");
+        },
+        function (msg) {
+            var sel = $('#agda_command_args_meta');
+            sel.empty();
+            msg.metas.forEach(function (meta) {
+                var opt = $('<option>');
+                opt.attr('value', meta);
+                opt.append(meta);
+                sel.append(opt);
+            });
+        },
+        function (msg) {
+            highlights = mergeHighlights(highlights, msg);
+            var buf = $('#agda_buffer');
+            var source = buf.text().replace(/\r\n?/g,'\n');
+            buf.empty();
+            var cur = 0;
+            highlights.forEach(function (highlight) {
+                var from = highlight.range.from - 1;
+                if (cur < from) {
+                    var span = $('<span>');
+                    span.append(source.substring(cur, from));
+                    buf.append(span);
+                    cur = from;
+                }
+                var to = highlight.range.to - 1;
+                if (cur < to) {
+                    var span = $('<span>');
+                    span.append(source.substring(cur, to));
+                    span.addClass(highlight.meta.aspect);
+                    buf.append(span);
+                    cur = to;
+                }
+            });
+            var span = $('<span>');
+            span.append(source.substring(cur, source.length));
+            buf.append(span);
+            cur = source.substring(cur, source.length);
         }
     );
 
