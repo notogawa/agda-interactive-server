@@ -1,4 +1,32 @@
 var Agda = (function () {
+    var highlights = [];
+
+    var mergeHighlights = function (currentHighlights, updateHighlights) {
+        currentHighlights.sort(function (a,b) { return a.range.from - b.range.from; });
+        updateHighlights.sort(function (a,b) { return a.range.from - b.range.from; });
+        var mergedHighlights = [];
+        var ch = currentHighlights.shift();
+        var uh = updateHighlights.shift();
+        while (ch && uh) {
+            if (ch.range.to <= uh.range.from) {
+                mergedHighlights.push(ch);
+                ch = currentHighlights.shift();
+            } else if (uh.range.to <= ch.range.from) {
+                mergedHighlights.push(uh);
+                uh = updateHighlights.shift();
+            } else {
+                ch = currentHighlights.shift();
+            }
+        }
+        if (typeof uh === 'undefined') {
+            mergedHighlights = mergedHighlights.concat(currentHighlights);
+        }
+        if (typeof ch === 'undefined') {
+            mergedHighlights = mergedHighlights.concat(updateHighlights);
+        }
+        return mergedHighlights;
+    }
+
     function Agda (remoteHost, onOpen, onError,
                    onRunningInfo, onDisplayInfo, onMetas, onHighlight) {
         this._debug = (typeof debug === 'undefined') ? false : true;
@@ -18,7 +46,8 @@ var Agda = (function () {
             } else if (msg.type == 'metas') {
                 return onMetas(msg.contents);
             } else if (msg.type == 'highlight') {
-                return onHighlight(msg.contents);
+                highlights = mergeHighlights(highlights, msg.contents);
+                return onHighlight(highlights);
             }
         }
     }

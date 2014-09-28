@@ -1,32 +1,4 @@
 $(document).ready(function() {
-    var highlights = [];
-
-    var mergeHighlights = function (currentHighlights, updateHighlights) {
-        currentHighlights.sort(function (a,b) { return a.range.from - b.range.from; });
-        updateHighlights.sort(function (a,b) { return a.range.from - b.range.from; });
-        var mergedHighlights = [];
-        var ch = currentHighlights.shift();
-        var uh = updateHighlights.shift();
-        while (ch && uh) {
-            if (ch.range.to <= uh.range.from) {
-                mergedHighlights.push(ch);
-                ch = currentHighlights.shift();
-            } else if (uh.range.to <= ch.range.from) {
-                mergedHighlights.push(uh);
-                uh = updateHighlights.shift();
-            } else {
-                ch = currentHighlights.shift();
-            }
-        }
-        if (typeof uh === 'undefined') {
-            mergedHighlights = mergedHighlights.concat(currentHighlights);
-        }
-        if (typeof ch === 'undefined') {
-            mergedHighlights = mergedHighlights.concat(updateHighlights);
-        }
-        return mergedHighlights;
-    }
-
     var agda = new Agda(
         ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
         function () {
@@ -51,8 +23,7 @@ $(document).ready(function() {
                 sel.append(opt);
             });
         },
-        function (msg) {
-            highlights = mergeHighlights(highlights, msg);
+        function (highlights) {
             var buf = $('#agda_buffer');
             var source = buf.text().replace(/\r\n?/g,'\n');
             buf.empty();
