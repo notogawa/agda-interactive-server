@@ -26,6 +26,29 @@ $(document).ready(function() {
         function (highlights) {
             var buf = $('#agda_buffer');
             var source = buf.text().replace(/\r\n?/g,'\n');
+
+            var viewDiv = $('#agda_code_view');
+            viewDiv.empty();
+            var linenumber = 1;
+            source.split('\n').forEach(function (line) {
+                if (line === '') line = ' ';
+                var lineDiv = $('<div>');
+                lineDiv.css('position', 'relative');
+                var lineGutterDiv = $('<div>');
+                lineGutterDiv.addClass('agda_code_gutter');
+                lineGutterDiv.css('position', 'absolute');
+                lineGutterDiv.css('left', '-29px');
+                var lineNumberDiv = $('<div>');
+                lineNumberDiv.addClass('agda_code_linenumber');
+                lineNumberDiv.append(linenumber++);
+                lineGutterDiv.append(lineNumberDiv);
+                var linePre = $('<pre>');
+                linePre.append(line);
+                lineDiv.append(lineGutterDiv);
+                lineDiv.append(linePre);
+                viewDiv.append(lineDiv);
+            });
+
             buf.empty();
             var cur = 0;
             highlights.forEach(function (highlight) {

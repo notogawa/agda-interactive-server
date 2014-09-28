@@ -160,8 +160,9 @@ simpleWaiApp req respond = do
     ["jquery.js"]     -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery.js" Nothing
     ["agda.js"]       -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
     ["ui.js"]         -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
-    ["normalize.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "agda.css" Nothing
-    ["agda.css"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "normalize.css" Nothing
+    ["normalize.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "normalize.css" Nothing
+    ["agda.css"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "agda.css" Nothing
+    ["ui.css"]        -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "ui.css" Nothing
     _                 -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] "index.html" Nothing
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
