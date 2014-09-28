@@ -56,6 +56,7 @@ var Agda = (function () {
         }
     }
     function sendLoad (source) {
+        highlights = [];
         var msg = {};
         msg.type = 'load';
         msg.contents = {}

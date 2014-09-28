@@ -24,37 +24,41 @@ $(document).ready(function() {
                 sel.append(opt);
             });
         },
-        function (highlights) { // TODO: 高速化
+        function (highlights) {
             var source = editor.getValue();
             console.log
             var pos = 0;
+            var hs = [];
+            $.extend(true, hs, highlights);
             $('.ace_line').map(function () {return $(this);}).get().forEach(function (ace_line) {
                 var t = ace_line.text();
                 ace_line.empty();
                 var cur = pos;
-                var hs = undefined;
-                $.extend(true, highlights, hs);
-                highlights.forEach(function (highlight) {
+                hs.forEach(function (highlight) {
                     var from = highlight.range.from - 1;
-                    if (cur < from) {
-                        var span = $('<span>');
-                        span.append(source.substring(cur, from));
-                        ace_line.append(span);
-                        cur = from;
-                    }
                     var to = highlight.range.to - 1;
-                    if (cur < to) {
-                        var span = $('<span>');
-                        span.append(source.substring(cur, to));
-                        span.addClass(highlight.meta.aspect);
-                        ace_line.append(span);
-                        cur = to;
+                    if (to < pos || pos + t.length < from) {
+                    } else {
+                        if (cur < from) {
+                            var span = $('<span>');
+                            span.append(source.substring(cur, from));
+                            ace_line.append(span);
+                            cur = from;
+                        }
+                        if (cur < to) {
+                            var span = $('<span>');
+                            span.append(source.substring(cur, to));
+                            span.addClass(highlight.meta.aspect);
+                            ace_line.append(span);
+                            cur = to;
+                        }
+                        hs.shift();
                     }
                 });
                 var span = $('<span>');
                 span.append(source.substring(cur, pos + t.length));
                 ace_line.append(span);
-                pos = pos + t.length;
+                pos = pos + t.length + 1;
             });
         }
     );
