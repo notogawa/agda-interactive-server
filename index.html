@@ -7,8 +7,7 @@
 <body>
 
 <form onsubmit="return false;">
-  <pre contentEditable="true" id="agda_buffer" style="width: 100%; height: 500px; overflow-y: auto;">
-module Main where
+  <div contentEditable="true" id="agda_buffer" style="width: 100%; height: 500px; overflow-y: auto;">module Main where
 
 import Relation.Binary.PropositionalEquality as PropEq
 open PropEq using (_≡_; refl; sym; cong; trans)
@@ -32,8 +31,7 @@ next-weekday saturday = monday
 next-weekday sunday = monday
 
 test-next-weekday : next-weekday (next-weekday saturday) ≡ tuesday
-test-next-weekday = ?</pre>
-  <div id="agda_code_view" style="padding: 100px; width: 80%; height: 500px; overflow-y: auto;"></div>
+test-next-weekday = ?</div>
   <input id="agda_command_reload" type="button" value="Reload"/>
   <input id="agda_command_metas" type="button" value="Metas"/>
   <select id="agda_command_args_meta" type="text"></select>
@@ -47,9 +45,9 @@ test-next-weekday = ?</pre>
 
 <script src="jquery.js"></script>
 <script src="agda.js"></script>
+<script src="ace.js"></script>
 <script src="ui.js"></script>
 <link href="normalize.css" rel="stylesheet" type="text/css">
 <link href="agda.css" rel="stylesheet" type="text/css">
-<link href="ui.css" rel="stylesheet" type="text/css">
 </body>
 </html>

@@ -1,8 +1,9 @@
 $(document).ready(function() {
+    var editor = ace.edit("agda_buffer");
     var agda = new Agda(
         ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
         function () {
-            return agda.sendLoad($('#agda_buffer').text());
+            return agda.sendLoad(editor.getValue());
         },
         function (e) {
             console.log(e);
@@ -23,60 +24,45 @@ $(document).ready(function() {
                 sel.append(opt);
             });
         },
-        function (highlights) {
-            var buf = $('#agda_buffer');
-            var source = buf.text().replace(/\r\n?/g,'\n');
-
-            var viewDiv = $('#agda_code_view');
-            viewDiv.empty();
-            var linenumber = 1;
-            source.split('\n').forEach(function (line) {
-                if (line === '') line = ' ';
-                var lineDiv = $('<div>');
-                lineDiv.css('position', 'relative');
-                var lineGutterDiv = $('<div>');
-                lineGutterDiv.addClass('agda_code_gutter');
-                lineGutterDiv.css('position', 'absolute');
-                lineGutterDiv.css('left', '-29px');
-                var lineNumberDiv = $('<div>');
-                lineNumberDiv.addClass('agda_code_linenumber');
-                lineNumberDiv.append(linenumber++);
-                lineGutterDiv.append(lineNumberDiv);
-                var linePre = $('<pre>');
-                linePre.append(line);
-                lineDiv.append(lineGutterDiv);
-                lineDiv.append(linePre);
-                viewDiv.append(lineDiv);
+        function (highlights) { // TODO: 高速化
+            var source = editor.getValue();
+            console.log
+            var pos = 0;
+            $('.ace_line').map(function () {return $(this);}).get().forEach(function (ace_line) {
+                var t = ace_line.text();
+                ace_line.empty();
+                var cur = pos;
+                var hs = undefined;
+                $.extend(true, highlights, hs);
+                highlights.forEach(function (highlight) {
+                    var from = highlight.range.from - 1;
+                    if (cur < from) {
+                        var span = $('<span>');
+                        span.append(source.substring(cur, from));
+                        ace_line.append(span);
+                        cur = from;
+                    }
+                    var to = highlight.range.to - 1;
+                    if (cur < to) {
+                        var span = $('<span>');
+                        span.append(source.substring(cur, to));
+                        span.addClass(highlight.meta.aspect);
+                        ace_line.append(span);
+                        cur = to;
+                    }
+                });
+                var span = $('<span>');
+                span.append(source.substring(cur, pos + t.length));
+                ace_line.append(span);
+                pos = pos + t.length;
             });
-
-            buf.empty();
-            var cur = 0;
-            highlights.forEach(function (highlight) {
-                var from = highlight.range.from - 1;
-                if (cur < from) {
-                    var span = $('<span>');
-                    span.append(source.substring(cur, from));
-                    buf.append(span);
-                    cur = from;
-                }
-                var to = highlight.range.to - 1;
-                if (cur < to) {
-                    var span = $('<span>');
-                    span.append(source.substring(cur, to));
-                    span.addClass(highlight.meta.aspect);
-                    buf.append(span);
-                    cur = to;
-                }
-            });
-            var span = $('<span>');
-            span.append(source.substring(cur, source.length));
-            buf.append(span);
-            cur = source.substring(cur, source.length);
         }
     );
-
+    editor.on('change', function (e) {
+        return agda.sendLoad(editor.getValue()); // TODO: イマイチだな？
+    });
     $('#agda_command_reload').click(function () {
-        return agda.sendLoad($('#agda_buffer').text());
+        return agda.sendLoad(editor.getValue());
     });
     $('#agda_command_metas').click(function () {
         return agda.sendMetas();

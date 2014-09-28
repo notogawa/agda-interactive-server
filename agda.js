@@ -37,6 +37,10 @@ var Agda = (function () {
         }
         this._connection.onopen = onOpen;
         this._connection.onerror = onError;
+        this._onRunningInfo = onRunningInfo;
+        this._onDisplayInfo = onDisplayInfo;
+        this._onMetas = onMetas;
+        this._onHighlight = onHighlight;
         this._connection.onmessage = function (msgData) {
             var msg = JSON.parse(msgData.data);
             if (msg.type == 'runningInfo') {
@@ -97,6 +101,9 @@ var Agda = (function () {
         msg.contents.expr = expr;
         this._connection.send(JSON.stringify(msg));
     }
+    function highlight() {
+        return this._onHighlight(highlights);
+    }
 
     Agda.prototype = {
         constructor: Agda,
@@ -106,7 +113,8 @@ var Agda = (function () {
         sendGive: sendGive,
         sendRefine: sendRefine,
         sendMetas: sendMetas,
-        sendAuto: sendAuto
+        sendAuto: sendAuto,
+        highlight: highlight
     };
 
     return Agda;
