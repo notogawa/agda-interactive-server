@@ -17,12 +17,17 @@ $(document).ready(function() {
         function (msg) {
             var sel = $('#agda_command_args_meta');
             sel.empty();
-            msg.metas.forEach(function (meta) {
-                var opt = $('<option>');
-                opt.attr('value', meta);
-                opt.append(meta);
-                sel.append(opt);
-            });
+            if (msg.metas.length == 0) {
+                sel.css('display', 'none');
+            } else {
+                msg.metas.forEach(function (meta) {
+                    var opt = $('<option>');
+                    opt.attr('value', meta);
+                    opt.append(meta);
+                    sel.append(opt);
+                });
+                sel.css('display', 'inline');
+            }
         },
         function (highlights) {
             var source = editor.getValue();
