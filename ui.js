@@ -26,7 +26,6 @@ $(document).ready(function() {
         },
         function (highlights) {
             var source = editor.getValue();
-            console.log
             var pos = 0;
             var hs = [];
             $.extend(true, hs, highlights);
@@ -46,6 +45,7 @@ $(document).ready(function() {
                             cur = from;
                         }
                         if (cur < to) {
+                            to = pos + t.length < to ? pos + t.length : to;
                             var span = $('<span>');
                             span.append(source.substring(cur, to));
                             span.addClass(highlight.meta.aspect);
