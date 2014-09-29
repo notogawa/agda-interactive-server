@@ -10,7 +10,7 @@
   <div id="agda_editor" style="float: left">
     <input id="agda_buffer_save" type="button" value="Save"/>
     <input id="agda_buffer_load" type="button" value="Load"/>
-    <div id="agda_buffer" style="width: 60em; height: 768px; overflow-y: auto;">module Main where
+    <div id="agda_buffer" style="width: 55em; height: 768px; overflow-y: auto;">module Main where
 
 import Relation.Binary.PropositionalEquality as PropEq
 open PropEq using (_≡_; refl; sym; cong; trans)
@@ -41,12 +41,12 @@ test-next-weekday = ?</div>
   <select id="agda_command_args_meta" type="text"></select>
   <input id="agda_command_args_expr" type="text"/>
   <input id="agda_command_give" type="button" value="Give"/>
-  <input id="agda_command_solveAll" type="button" value="SolveAll"/>
-  <input id="agda_command_constraints" type="button" value="Constraints"/>
+  <!-- <input id="agda_command_solveAll" type="button" value="SolveAll"/> -->
+  <!-- <input id="agda_command_constraints" type="button" value="Constraints"/> -->
 </form>
 
-<pre id="agda_display_prompt" style="width: 60em;"></pre>
-<pre id="agda_running_prompt" style="background-color: #000; color: #FFF; width: 60em; height: 200px; overflow-y: auto;"></pre>
+<pre id="agda_display_prompt" style="width: 40em;"></pre>
+<pre id="agda_running_prompt" style="background-color: #000; color: #FFF; width: 40em; height: 200px; overflow-y: auto;"></pre>
 
 <script src="jquery.js"></script>
 <script src="agda.js"></script>
