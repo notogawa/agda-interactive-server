@@ -18,6 +18,7 @@ import Control.Concurrent
 import Control.Monad
 import Control.Monad.State
 import System.IO.Temp
+import System.Directory
 
 import qualified Agda.TypeChecking.Monad as Agda
 import qualified Agda.Interaction.Response as Agda
@@ -43,7 +44,10 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
     dispatch' (Just msg) =
         case msg of
           MessageLoad source -> do
-            liftIO $ T.writeFile src source
+            liftIO $ do
+              let newsrc = src ++ ".new"
+              T.writeFile newsrc source
+              copyFile newsrc src
             run (Agda.Cmd_load src [dir, "/usr/share/agda-stdlib"])
             dispatch conn dir
           MessageMetas -> do
