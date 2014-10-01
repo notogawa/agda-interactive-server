@@ -45,22 +45,28 @@ $(document).ready(function() {
                     } else {
                         if (cur < from) {
                             var span = $('<span>');
-                            span.append(source.substring(cur, from));
+                            var code = source.substring(cur, from);
+                            span.append(code);
+                            if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
                             ace_line.append(span);
                             cur = from;
                         }
                         if (cur < to) {
                             to = pos + t.length < to ? pos + t.length : to;
                             var span = $('<span>');
-                            span.append(source.substring(cur, to));
+                            var code = source.substring(cur, to);
+                            span.append(code);
                             span.addClass(highlight.meta.aspect);
+                            if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
                             ace_line.append(span);
                             cur = to;
                         }
                     }
                 });
                 var span = $('<span>');
-                span.append(source.substring(cur, pos + t.length));
+                var code = source.substring(cur, pos + t.length);
+                span.append(code);
+                if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
                 ace_line.append(span);
                 pos = pos + t.length + 1;
             });
