@@ -57,7 +57,6 @@ $(document).ready(function() {
                             ace_line.append(span);
                             cur = to;
                         }
-                        hs.shift();
                     }
                 });
                 var span = $('<span>');
