@@ -1,0 +1,1697 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Category.Monad.Predicate</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Agda standard library</a
+      ><a name="102"
+      >
+</a
+      ><a name="103" class="Comment"
+      >--</a
+      ><a name="105"
+      >
+</a
+      ><a name="106" class="Comment"
+      >-- Monads on indexed sets (predicates)</a
+      ><a name="144"
+      >
+</a
+      ><a name="145" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="217"
+      >
+
+</a
+      ><a name="219" class="Comment"
+      >-- Note that currently the monad laws are not included here.</a
+      ><a name="279"
+      >
+
+</a
+      ><a name="281" class="Keyword"
+      >module</a
+      ><a name="287"
+      > </a
+      ><a name="288" href="Category.Monad.Predicate.html#1" class="Module"
+      >Category.Monad.Predicate</a
+      ><a name="312"
+      > </a
+      ><a name="313" class="Keyword"
+      >where</a
+      ><a name="318"
+      >
+
+</a
+      ><a name="320" class="Keyword"
+      >open</a
+      ><a name="324"
+      > </a
+      ><a name="325" class="Keyword"
+      >import</a
+      ><a name="331"
+      > </a
+      ><a name="332" href="Category.Applicative.Indexed.html#1" class="Module"
+      >Category.Applicative.Indexed</a
+      ><a name="360"
+      >
+</a
+      ><a name="361" class="Keyword"
+      >open</a
+      ><a name="365"
+      > </a
+      ><a name="366" class="Keyword"
+      >import</a
+      ><a name="372"
+      > </a
+      ><a name="373" href="Category.Monad.html#1" class="Module"
+      >Category.Monad</a
+      ><a name="387"
+      >
+</a
+      ><a name="388" class="Keyword"
+      >open</a
+      ><a name="392"
+      > </a
+      ><a name="393" class="Keyword"
+      >import</a
+      ><a name="399"
+      > </a
+      ><a name="400" href="Category.Monad.Indexed.html#1" class="Module"
+      >Category.Monad.Indexed</a
+      ><a name="422"
+      >
+</a
+      ><a name="423" class="Keyword"
+      >open</a
+      ><a name="427"
+      > </a
+      ><a name="428" class="Keyword"
+      >import</a
+      ><a name="434"
+      > </a
+      ><a name="435" href="Data.Unit.html#1" class="Module"
+      >Data.Unit</a
+      ><a name="444"
+      >
+</a
+      ><a name="445" class="Keyword"
+      >open</a
+      ><a name="449"
+      > </a
+      ><a name="450" class="Keyword"
+      >import</a
+      ><a name="456"
+      > </a
+      ><a name="457" href="Data.Product.html#1" class="Module"
+      >Data.Product</a
+      ><a name="469"
+      >
+</a
+      ><a name="470" class="Keyword"
+      >open</a
+      ><a name="474"
+      > </a
+      ><a name="475" class="Keyword"
+      >import</a
+      ><a name="481"
+      > </a
+      ><a name="482" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="490"
+      >
+</a
+      ><a name="491" class="Keyword"
+      >open</a
+      ><a name="495"
+      > </a
+      ><a name="496" class="Keyword"
+      >import</a
+      ><a name="502"
+      > </a
+      ><a name="503" href="Level.html#1" class="Module"
+      >Level</a
+      ><a name="508"
+      >
+</a
+      ><a name="509" class="Keyword"
+      >open</a
+      ><a name="513"
+      > </a
+      ><a name="514" class="Keyword"
+      >import</a
+      ><a name="520"
+      > </a
+      ><a name="521" href="Relation.Binary.PropositionalEquality.html#1" class="Module"
+      >Relation.Binary.PropositionalEquality</a
+      ><a name="558"
+      >
+</a
+      ><a name="559" class="Keyword"
+      >open</a
+      ><a name="563"
+      > </a
+      ><a name="564" class="Keyword"
+      >import</a
+      ><a name="570"
+      > </a
+      ><a name="571" href="Relation.Unary.html#1" class="Module"
+      >Relation.Unary</a
+      ><a name="585"
+      >
+</a
+      ><a name="586" class="Keyword"
+      >open</a
+      ><a name="590"
+      > </a
+      ><a name="591" class="Keyword"
+      >import</a
+      ><a name="597"
+      > </a
+      ><a name="598" href="Relation.Unary.PredicateTransformer.html#1" class="Module"
+      >Relation.Unary.PredicateTransformer</a
+      ><a name="633"
+      > </a
+      ><a name="634" class="Keyword"
+      >using</a
+      ><a name="639"
+      > </a
+      ><a name="640" class="Symbol"
+      >(</a
+      ><a name="641"
+      >Pt</a
+      ><a name="643" class="Symbol"
+      >)</a
+      ><a name="644"
+      >
+
+</a
+      ><a name="646" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="718"
+      >
+
+</a
+      ><a name="720" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65371;_&#65373;&#215;_</a
+      ><a name="725"
+      > </a
+      ><a name="726" class="Symbol"
+      >:</a
+      ><a name="727"
+      > </a
+      ><a name="728" class="Symbol"
+      >&#8704;</a
+      ><a name="729"
+      > </a
+      ><a name="730" class="Symbol"
+      >{</a
+      ><a name="731" href="Category.Monad.Predicate.html#731" class="Bound"
+      >i</a
+      ><a name="732"
+      > </a
+      ><a name="733" href="Category.Monad.Predicate.html#733" class="Bound"
+      >a</a
+      ><a name="734" class="Symbol"
+      >}</a
+      ><a name="735"
+      > </a
+      ><a name="736" class="Symbol"
+      >{</a
+      ><a name="737" href="Category.Monad.Predicate.html#737" class="Bound"
+      >I</a
+      ><a name="738"
+      > </a
+      ><a name="739" class="Symbol"
+      >:</a
+      ><a name="740"
+      > </a
+      ><a name="741" class="PrimitiveType"
+      >Set</a
+      ><a name="744"
+      > </a
+      ><a name="745" href="Category.Monad.Predicate.html#731" class="Bound"
+      >i</a
+      ><a name="746" class="Symbol"
+      >}</a
+      ><a name="747"
+      > </a
+      ><a name="748" class="Symbol"
+      >&#8594;</a
+      ><a name="749"
+      > </a
+      ><a name="750" href="Category.Monad.Predicate.html#737" class="Bound"
+      >I</a
+      ><a name="751"
+      > </a
+      ><a name="752" class="Symbol"
+      >&#8594;</a
+      ><a name="753"
+      > </a
+      ><a name="754" class="PrimitiveType"
+      >Set</a
+      ><a name="757"
+      > </a
+      ><a name="758" href="Category.Monad.Predicate.html#733" class="Bound"
+      >a</a
+      ><a name="759"
+      > </a
+      ><a name="760" class="Symbol"
+      >&#8594;</a
+      ><a name="761"
+      > </a
+      ><a name="762" href="Relation.Unary.html#555" class="Function"
+      >Pred</a
+      ><a name="766"
+      > </a
+      ><a name="767" href="Category.Monad.Predicate.html#737" class="Bound"
+      >I</a
+      ><a name="768"
+      > </a
+      ><a name="769" class="Symbol"
+      >_</a
+      ><a name="770"
+      >
+</a
+      ><a name="771" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65371;</a
+      ><a name="772"
+      > </a
+      ><a name="773" href="Category.Monad.Predicate.html#773" class="Bound"
+      >i</a
+      ><a name="774"
+      > </a
+      ><a name="775" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65373;&#215;</a
+      ><a name="777"
+      > </a
+      ><a name="778" href="Category.Monad.Predicate.html#778" class="Bound"
+      >A</a
+      ><a name="779"
+      > </a
+      ><a name="780" class="Symbol"
+      >=</a
+      ><a name="781"
+      > </a
+      ><a name="782" class="Symbol"
+      >&#955;</a
+      ><a name="783"
+      > </a
+      ><a name="784" href="Category.Monad.Predicate.html#784" class="Bound"
+      >j</a
+      ><a name="785"
+      > </a
+      ><a name="786" class="Symbol"
+      >&#8594;</a
+      ><a name="787"
+      > </a
+      ><a name="788" href="Category.Monad.Predicate.html#773" class="Bound"
+      >i</a
+      ><a name="789"
+      > </a
+      ><a name="790" href="Relation.Binary.Core.html#4603" class="Datatype Operator"
+      >&#8801;</a
+      ><a name="791"
+      > </a
+      ><a name="792" href="Category.Monad.Predicate.html#784" class="Bound"
+      >j</a
+      ><a name="793"
+      > </a
+      ><a name="794" href="Data.Product.html#1055" class="Function Operator"
+      >&#215;</a
+      ><a name="795"
+      > </a
+      ><a name="796" href="Category.Monad.Predicate.html#778" class="Bound"
+      >A</a
+      ><a name="797"
+      >
+
+</a
+      ><a name="799" href="Category.Monad.Predicate.html#799" class="Function Operator"
+      >&#65371;_&#65373;</a
+      ><a name="802"
+      > </a
+      ><a name="803" class="Symbol"
+      >:</a
+      ><a name="804"
+      > </a
+      ><a name="805" class="Symbol"
+      >&#8704;</a
+      ><a name="806"
+      > </a
+      ><a name="807" class="Symbol"
+      >{</a
+      ><a name="808" href="Category.Monad.Predicate.html#808" class="Bound"
+      >i</a
+      ><a name="809" class="Symbol"
+      >}</a
+      ><a name="810"
+      > </a
+      ><a name="811" class="Symbol"
+      >{</a
+      ><a name="812" href="Category.Monad.Predicate.html#812" class="Bound"
+      >I</a
+      ><a name="813"
+      > </a
+      ><a name="814" class="Symbol"
+      >:</a
+      ><a name="815"
+      > </a
+      ><a name="816" class="PrimitiveType"
+      >Set</a
+      ><a name="819"
+      > </a
+      ><a name="820" href="Category.Monad.Predicate.html#808" class="Bound"
+      >i</a
+      ><a name="821" class="Symbol"
+      >}</a
+      ><a name="822"
+      > </a
+      ><a name="823" class="Symbol"
+      >&#8594;</a
+      ><a name="824"
+      > </a
+      ><a name="825" href="Category.Monad.Predicate.html#812" class="Bound"
+      >I</a
+      ><a name="826"
+      > </a
+      ><a name="827" class="Symbol"
+      >&#8594;</a
+      ><a name="828"
+      > </a
+      ><a name="829" href="Relation.Unary.html#555" class="Function"
+      >Pred</a
+      ><a name="833"
+      > </a
+      ><a name="834" href="Category.Monad.Predicate.html#812" class="Bound"
+      >I</a
+      ><a name="835"
+      > </a
+      ><a name="836" href="Category.Monad.Predicate.html#808" class="Bound"
+      >i</a
+      ><a name="837"
+      >
+</a
+      ><a name="838" href="Category.Monad.Predicate.html#799" class="Function Operator"
+      >&#65371;</a
+      ><a name="839"
+      > </a
+      ><a name="840" href="Category.Monad.Predicate.html#840" class="Bound"
+      >i</a
+      ><a name="841"
+      > </a
+      ><a name="842" href="Category.Monad.Predicate.html#799" class="Function Operator"
+      >&#65373;</a
+      ><a name="843"
+      > </a
+      ><a name="844" class="Symbol"
+      >=</a
+      ><a name="845"
+      > </a
+      ><a name="846" class="Symbol"
+      >&#955;</a
+      ><a name="847"
+      > </a
+      ><a name="848" href="Category.Monad.Predicate.html#848" class="Bound"
+      >j</a
+      ><a name="849"
+      > </a
+      ><a name="850" class="Symbol"
+      >&#8594;</a
+      ><a name="851"
+      > </a
+      ><a name="852" href="Category.Monad.Predicate.html#848" class="Bound"
+      >j</a
+      ><a name="853"
+      > </a
+      ><a name="854" href="Relation.Unary.html#925" class="Function Operator"
+      >&#8712;</a
+      ><a name="855"
+      > </a
+      ><a name="856" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65371;</a
+      ><a name="857"
+      > </a
+      ><a name="858" href="Category.Monad.Predicate.html#840" class="Bound"
+      >i</a
+      ><a name="859"
+      > </a
+      ><a name="860" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65373;&#215;</a
+      ><a name="862"
+      > </a
+      ><a name="863" href="Data.Unit.html#653" class="Record"
+      >&#8868;</a
+      ><a name="864"
+      >
+
+</a
+      ><a name="866" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="938"
+      >
+
+</a
+      ><a name="940" class="Keyword"
+      >record</a
+      ><a name="946"
+      > </a
+      ><a name="947" href="Category.Monad.Predicate.html#947" class="Record"
+      >RawPMonad</a
+      ><a name="956"
+      > </a
+      ><a name="957" class="Symbol"
+      >{</a
+      ><a name="958" href="Category.Monad.Predicate.html#958" class="Bound"
+      >i</a
+      ><a name="959"
+      > </a
+      ><a name="960" href="Category.Monad.Predicate.html#960" class="Bound"
+      >&#8467;</a
+      ><a name="961" class="Symbol"
+      >}</a
+      ><a name="962"
+      > </a
+      ><a name="963" class="Symbol"
+      >{</a
+      ><a name="964" href="Category.Monad.Predicate.html#964" class="Bound"
+      >I</a
+      ><a name="965"
+      > </a
+      ><a name="966" class="Symbol"
+      >:</a
+      ><a name="967"
+      > </a
+      ><a name="968" class="PrimitiveType"
+      >Set</a
+      ><a name="971"
+      > </a
+      ><a name="972" href="Category.Monad.Predicate.html#958" class="Bound"
+      >i</a
+      ><a name="973" class="Symbol"
+      >}</a
+      ><a name="974"
+      > </a
+      ><a name="975" class="Symbol"
+      >(</a
+      ><a name="976" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="977"
+      > </a
+      ><a name="978" class="Symbol"
+      >:</a
+      ><a name="979"
+      > </a
+      ><a name="980" href="Relation.Unary.PredicateTransformer.html#654" class="Function"
+      >Pt</a
+      ><a name="982"
+      > </a
+      ><a name="983" href="Category.Monad.Predicate.html#964" class="Bound"
+      >I</a
+      ><a name="984"
+      > </a
+      ><a name="985" class="Symbol"
+      >(</a
+      ><a name="986" href="Category.Monad.Predicate.html#958" class="Bound"
+      >i</a
+      ><a name="987"
+      > </a
+      ><a name="988" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="989"
+      > </a
+      ><a name="990" href="Category.Monad.Predicate.html#960" class="Bound"
+      >&#8467;</a
+      ><a name="991" class="Symbol"
+      >))</a
+      ><a name="993"
+      > </a
+      ><a name="994" class="Symbol"
+      >:</a
+      ><a name="995"
+      >
+                 </a
+      ><a name="1013" class="PrimitiveType"
+      >Set</a
+      ><a name="1016"
+      > </a
+      ><a name="1017" class="Symbol"
+      >(</a
+      ><a name="1018" href="Agda.Primitive.html#596" class="Primitive"
+      >suc</a
+      ><a name="1021"
+      > </a
+      ><a name="1022" href="Category.Monad.Predicate.html#958" class="Bound"
+      >i</a
+      ><a name="1023"
+      > </a
+      ><a name="1024" href="Agda.Primitive.html#626" class="Primitive Operator"
+      >&#8852;</a
+      ><a name="1025"
+      > </a
+      ><a name="1026" href="Agda.Primitive.html#596" class="Primitive"
+      >suc</a
+      ><a name="1029"
+      > </a
+      ><a name="1030" href="Category.Monad.Predicate.html#960" class="Bound"
+      >&#8467;</a
+      ><a name="1031" class="Symbol"
+      >)</a
+      ><a name="1032"
+      > </a
+      ><a name="1033" class="Keyword"
+      >where</a
+      ><a name="1038"
+      >
+
+  </a
+      ><a name="1042" class="Keyword"
+      >infixl</a
+      ><a name="1048"
+      > </a
+      ><a name="1049" class="Number"
+      >1</a
+      ><a name="1050"
+      > _?&gt;=_ _?&gt;_ _&gt;?&gt;_
+  </a
+      ><a name="1070" class="Keyword"
+      >infixr</a
+      ><a name="1076"
+      > </a
+      ><a name="1077" class="Number"
+      >1</a
+      ><a name="1078"
+      > _=&lt;?_ _&lt;?&lt;_
+
+  </a
+      ><a name="1094" class="Comment"
+      >-- ``Demonic'' operations (the opponent chooses the state).</a
+      ><a name="1153"
+      >
+
+  </a
+      ><a name="1157" class="Keyword"
+      >field</a
+      ><a name="1162"
+      >
+    </a
+      ><a name="1167" href="Category.Monad.Predicate.html#1167" class="Field"
+      >return?</a
+      ><a name="1174"
+      > </a
+      ><a name="1175" class="Symbol"
+      >:</a
+      ><a name="1176"
+      > </a
+      ><a name="1177" class="Symbol"
+      >&#8704;</a
+      ><a name="1178"
+      > </a
+      ><a name="1179" class="Symbol"
+      >{</a
+      ><a name="1180" href="Category.Monad.Predicate.html#1180" class="Bound"
+      >P</a
+      ><a name="1181" class="Symbol"
+      >}</a
+      ><a name="1182"
+      > </a
+      ><a name="1183" class="Symbol"
+      >&#8594;</a
+      ><a name="1184"
+      > </a
+      ><a name="1185" href="Category.Monad.Predicate.html#1180" class="Bound"
+      >P</a
+      ><a name="1186"
+      > </a
+      ><a name="1187" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1188"
+      > </a
+      ><a name="1189" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1190"
+      > </a
+      ><a name="1191" href="Category.Monad.Predicate.html#1180" class="Bound"
+      >P</a
+      ><a name="1192"
+      >
+    </a
+      ><a name="1197" href="Category.Monad.Predicate.html#1197" class="Field Operator"
+      >_=&lt;?_</a
+      ><a name="1202"
+      >   </a
+      ><a name="1205" class="Symbol"
+      >:</a
+      ><a name="1206"
+      > </a
+      ><a name="1207" class="Symbol"
+      >&#8704;</a
+      ><a name="1208"
+      > </a
+      ><a name="1209" class="Symbol"
+      >{</a
+      ><a name="1210" href="Category.Monad.Predicate.html#1210" class="Bound"
+      >P</a
+      ><a name="1211"
+      > </a
+      ><a name="1212" href="Category.Monad.Predicate.html#1212" class="Bound"
+      >Q</a
+      ><a name="1213" class="Symbol"
+      >}</a
+      ><a name="1214"
+      > </a
+      ><a name="1215" class="Symbol"
+      >&#8594;</a
+      ><a name="1216"
+      > </a
+      ><a name="1217" href="Category.Monad.Predicate.html#1210" class="Bound"
+      >P</a
+      ><a name="1218"
+      > </a
+      ><a name="1219" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1220"
+      > </a
+      ><a name="1221" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1222"
+      > </a
+      ><a name="1223" href="Category.Monad.Predicate.html#1212" class="Bound"
+      >Q</a
+      ><a name="1224"
+      > </a
+      ><a name="1225" class="Symbol"
+      >&#8594;</a
+      ><a name="1226"
+      > </a
+      ><a name="1227" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1228"
+      > </a
+      ><a name="1229" href="Category.Monad.Predicate.html#1210" class="Bound"
+      >P</a
+      ><a name="1230"
+      > </a
+      ><a name="1231" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1232"
+      > </a
+      ><a name="1233" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1234"
+      > </a
+      ><a name="1235" href="Category.Monad.Predicate.html#1212" class="Bound"
+      >Q</a
+      ><a name="1236"
+      >
+
+  </a
+      ><a name="1240" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >_?&gt;=_</a
+      ><a name="1245"
+      > </a
+      ><a name="1246" class="Symbol"
+      >:</a
+      ><a name="1247"
+      > </a
+      ><a name="1248" class="Symbol"
+      >&#8704;</a
+      ><a name="1249"
+      > </a
+      ><a name="1250" class="Symbol"
+      >{</a
+      ><a name="1251" href="Category.Monad.Predicate.html#1251" class="Bound"
+      >P</a
+      ><a name="1252"
+      > </a
+      ><a name="1253" href="Category.Monad.Predicate.html#1253" class="Bound"
+      >Q</a
+      ><a name="1254" class="Symbol"
+      >}</a
+      ><a name="1255"
+      > </a
+      ><a name="1256" class="Symbol"
+      >&#8594;</a
+      ><a name="1257"
+      > </a
+      ><a name="1258" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1259"
+      > </a
+      ><a name="1260" href="Category.Monad.Predicate.html#1251" class="Bound"
+      >P</a
+      ><a name="1261"
+      > </a
+      ><a name="1262" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1263"
+      > </a
+      ><a name="1264" href="Function.html#1053" class="Function"
+      >const</a
+      ><a name="1269"
+      > </a
+      ><a name="1270" class="Symbol"
+      >(</a
+      ><a name="1271" href="Category.Monad.Predicate.html#1251" class="Bound"
+      >P</a
+      ><a name="1272"
+      > </a
+      ><a name="1273" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1274"
+      > </a
+      ><a name="1275" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1276"
+      > </a
+      ><a name="1277" href="Category.Monad.Predicate.html#1253" class="Bound"
+      >Q</a
+      ><a name="1278" class="Symbol"
+      >)</a
+      ><a name="1279"
+      > </a
+      ><a name="1280" href="Relation.Unary.html#2619" class="Function Operator"
+      >&#8658;</a
+      ><a name="1281"
+      > </a
+      ><a name="1282" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1283"
+      > </a
+      ><a name="1284" href="Category.Monad.Predicate.html#1253" class="Bound"
+      >Q</a
+      ><a name="1285"
+      >
+  </a
+      ><a name="1288" href="Category.Monad.Predicate.html#1288" class="Bound"
+      >m</a
+      ><a name="1289"
+      > </a
+      ><a name="1290" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >?&gt;=</a
+      ><a name="1293"
+      > </a
+      ><a name="1294" href="Category.Monad.Predicate.html#1294" class="Bound"
+      >f</a
+      ><a name="1295"
+      > </a
+      ><a name="1296" class="Symbol"
+      >=</a
+      ><a name="1297"
+      > </a
+      ><a name="1298" href="Category.Monad.Predicate.html#1294" class="Bound"
+      >f</a
+      ><a name="1299"
+      > </a
+      ><a name="1300" href="Category.Monad.Predicate.html#1197" class="Field Operator"
+      >=&lt;?</a
+      ><a name="1303"
+      > </a
+      ><a name="1304" href="Category.Monad.Predicate.html#1288" class="Bound"
+      >m</a
+      ><a name="1305"
+      >
+
+  </a
+      ><a name="1309" href="Category.Monad.Predicate.html#1309" class="Function Operator"
+      >_?&gt;=&#8242;_</a
+      ><a name="1315"
+      > </a
+      ><a name="1316" class="Symbol"
+      >:</a
+      ><a name="1317"
+      > </a
+      ><a name="1318" class="Symbol"
+      >&#8704;</a
+      ><a name="1319"
+      > </a
+      ><a name="1320" class="Symbol"
+      >{</a
+      ><a name="1321" href="Category.Monad.Predicate.html#1321" class="Bound"
+      >P</a
+      ><a name="1322"
+      > </a
+      ><a name="1323" href="Category.Monad.Predicate.html#1323" class="Bound"
+      >Q</a
+      ><a name="1324" class="Symbol"
+      >}</a
+      ><a name="1325"
+      > </a
+      ><a name="1326" class="Symbol"
+      >&#8594;</a
+      ><a name="1327"
+      > </a
+      ><a name="1328" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1329"
+      > </a
+      ><a name="1330" href="Category.Monad.Predicate.html#1321" class="Bound"
+      >P</a
+      ><a name="1331"
+      > </a
+      ><a name="1332" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1333"
+      > </a
+      ><a name="1334" href="Function.html#1053" class="Function"
+      >const</a
+      ><a name="1339"
+      > </a
+      ><a name="1340" class="Symbol"
+      >(&#8704;</a
+      ><a name="1342"
+      > </a
+      ><a name="1343" href="Category.Monad.Predicate.html#1343" class="Bound"
+      >j</a
+      ><a name="1344"
+      > </a
+      ><a name="1345" class="Symbol"
+      >&#8594;</a
+      ><a name="1346"
+      > </a
+      ><a name="1347" class="Symbol"
+      >{</a
+      ><a name="1348" href="Category.Monad.Predicate.html#1348" class="Bound"
+      >_</a
+      ><a name="1349"
+      > </a
+      ><a name="1350" class="Symbol"
+      >:</a
+      ><a name="1351"
+      > </a
+      ><a name="1352" href="Category.Monad.Predicate.html#1321" class="Bound"
+      >P</a
+      ><a name="1353"
+      > </a
+      ><a name="1354" href="Category.Monad.Predicate.html#1343" class="Bound"
+      >j</a
+      ><a name="1355" class="Symbol"
+      >}</a
+      ><a name="1356"
+      > </a
+      ><a name="1357" class="Symbol"
+      >&#8594;</a
+      ><a name="1358"
+      > </a
+      ><a name="1359" href="Category.Monad.Predicate.html#1343" class="Bound"
+      >j</a
+      ><a name="1360"
+      > </a
+      ><a name="1361" href="Relation.Unary.html#925" class="Function Operator"
+      >&#8712;</a
+      ><a name="1362"
+      > </a
+      ><a name="1363" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1364"
+      > </a
+      ><a name="1365" href="Category.Monad.Predicate.html#1323" class="Bound"
+      >Q</a
+      ><a name="1366" class="Symbol"
+      >)</a
+      ><a name="1367"
+      > </a
+      ><a name="1368" href="Relation.Unary.html#2619" class="Function Operator"
+      >&#8658;</a
+      ><a name="1369"
+      > </a
+      ><a name="1370" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1371"
+      > </a
+      ><a name="1372" href="Category.Monad.Predicate.html#1323" class="Bound"
+      >Q</a
+      ><a name="1373"
+      >
+  </a
+      ><a name="1376" href="Category.Monad.Predicate.html#1376" class="Bound"
+      >m</a
+      ><a name="1377"
+      > </a
+      ><a name="1378" href="Category.Monad.Predicate.html#1309" class="Function Operator"
+      >?&gt;=&#8242;</a
+      ><a name="1382"
+      > </a
+      ><a name="1383" href="Category.Monad.Predicate.html#1383" class="Bound"
+      >f</a
+      ><a name="1384"
+      > </a
+      ><a name="1385" class="Symbol"
+      >=</a
+      ><a name="1386"
+      > </a
+      ><a name="1387" href="Category.Monad.Predicate.html#1376" class="Bound"
+      >m</a
+      ><a name="1388"
+      > </a
+      ><a name="1389" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >?&gt;=</a
+      ><a name="1392"
+      > </a
+      ><a name="1393" class="Symbol"
+      >&#955;</a
+      ><a name="1394"
+      > </a
+      ><a name="1395" class="Symbol"
+      >{</a
+      ><a name="1396" href="Category.Monad.Predicate.html#1396" class="Bound"
+      >j</a
+      ><a name="1397" class="Symbol"
+      >}</a
+      ><a name="1398"
+      > </a
+      ><a name="1399" href="Category.Monad.Predicate.html#1399" class="Bound"
+      >p</a
+      ><a name="1400"
+      > </a
+      ><a name="1401" class="Symbol"
+      >&#8594;</a
+      ><a name="1402"
+      > </a
+      ><a name="1403" href="Category.Monad.Predicate.html#1383" class="Bound"
+      >f</a
+      ><a name="1404"
+      > </a
+      ><a name="1405" href="Category.Monad.Predicate.html#1396" class="Bound"
+      >j</a
+      ><a name="1406"
+      > </a
+      ><a name="1407" class="Symbol"
+      >{</a
+      ><a name="1408" href="Category.Monad.Predicate.html#1399" class="Bound"
+      >p</a
+      ><a name="1409" class="Symbol"
+      >}</a
+      ><a name="1410"
+      >
+
+  </a
+      ><a name="1414" href="Category.Monad.Predicate.html#1414" class="Function Operator"
+      >_?&gt;_</a
+      ><a name="1418"
+      > </a
+      ><a name="1419" class="Symbol"
+      >:</a
+      ><a name="1420"
+      > </a
+      ><a name="1421" class="Symbol"
+      >&#8704;</a
+      ><a name="1422"
+      > </a
+      ><a name="1423" class="Symbol"
+      >{</a
+      ><a name="1424" href="Category.Monad.Predicate.html#1424" class="Bound"
+      >P</a
+      ><a name="1425"
+      > </a
+      ><a name="1426" href="Category.Monad.Predicate.html#1426" class="Bound"
+      >Q</a
+      ><a name="1427" class="Symbol"
+      >}</a
+      ><a name="1428"
+      > </a
+      ><a name="1429" class="Symbol"
+      >&#8594;</a
+      ><a name="1430"
+      > </a
+      ><a name="1431" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1432"
+      > </a
+      ><a name="1433" href="Category.Monad.Predicate.html#1424" class="Bound"
+      >P</a
+      ><a name="1434"
+      > </a
+      ><a name="1435" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1436"
+      > </a
+      ><a name="1437" href="Function.html#1053" class="Function"
+      >const</a
+      ><a name="1442"
+      > </a
+      ><a name="1443" class="Symbol"
+      >(&#8704;</a
+      ><a name="1445"
+      > </a
+      ><a name="1446" class="Symbol"
+      >{</a
+      ><a name="1447" href="Category.Monad.Predicate.html#1447" class="Bound"
+      >j</a
+      ><a name="1448" class="Symbol"
+      >}</a
+      ><a name="1449"
+      > </a
+      ><a name="1450" class="Symbol"
+      >&#8594;</a
+      ><a name="1451"
+      > </a
+      ><a name="1452" href="Category.Monad.Predicate.html#1447" class="Bound"
+      >j</a
+      ><a name="1453"
+      > </a
+      ><a name="1454" href="Relation.Unary.html#925" class="Function Operator"
+      >&#8712;</a
+      ><a name="1455"
+      > </a
+      ><a name="1456" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1457"
+      > </a
+      ><a name="1458" href="Category.Monad.Predicate.html#1426" class="Bound"
+      >Q</a
+      ><a name="1459" class="Symbol"
+      >)</a
+      ><a name="1460"
+      > </a
+      ><a name="1461" href="Relation.Unary.html#2619" class="Function Operator"
+      >&#8658;</a
+      ><a name="1462"
+      > </a
+      ><a name="1463" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1464"
+      > </a
+      ><a name="1465" href="Category.Monad.Predicate.html#1426" class="Bound"
+      >Q</a
+      ><a name="1466"
+      >
+  </a
+      ><a name="1469" href="Category.Monad.Predicate.html#1469" class="Bound"
+      >m&#8321;</a
+      ><a name="1471"
+      > </a
+      ><a name="1472" href="Category.Monad.Predicate.html#1414" class="Function Operator"
+      >?&gt;</a
+      ><a name="1474"
+      > </a
+      ><a name="1475" href="Category.Monad.Predicate.html#1475" class="Bound"
+      >m&#8322;</a
+      ><a name="1477"
+      > </a
+      ><a name="1478" class="Symbol"
+      >=</a
+      ><a name="1479"
+      > </a
+      ><a name="1480" href="Category.Monad.Predicate.html#1469" class="Bound"
+      >m&#8321;</a
+      ><a name="1482"
+      > </a
+      ><a name="1483" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >?&gt;=</a
+      ><a name="1486"
+      > </a
+      ><a name="1487" class="Symbol"
+      >&#955;</a
+      ><a name="1488"
+      > </a
+      ><a name="1489" href="Category.Monad.Predicate.html#1489" class="Bound"
+      >_</a
+      ><a name="1490"
+      > </a
+      ><a name="1491" class="Symbol"
+      >&#8594;</a
+      ><a name="1492"
+      > </a
+      ><a name="1493" href="Category.Monad.Predicate.html#1475" class="Bound"
+      >m&#8322;</a
+      ><a name="1495"
+      >
+
+  </a
+      ><a name="1499" href="Category.Monad.Predicate.html#1499" class="Function"
+      >join?</a
+      ><a name="1504"
+      > </a
+      ><a name="1505" class="Symbol"
+      >:</a
+      ><a name="1506"
+      > </a
+      ><a name="1507" class="Symbol"
+      >&#8704;</a
+      ><a name="1508"
+      > </a
+      ><a name="1509" class="Symbol"
+      >{</a
+      ><a name="1510" href="Category.Monad.Predicate.html#1510" class="Bound"
+      >P</a
+      ><a name="1511" class="Symbol"
+      >}</a
+      ><a name="1512"
+      > </a
+      ><a name="1513" class="Symbol"
+      >&#8594;</a
+      ><a name="1514"
+      > </a
+      ><a name="1515" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1516"
+      > </a
+      ><a name="1517" class="Symbol"
+      >(</a
+      ><a name="1518" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1519"
+      > </a
+      ><a name="1520" href="Category.Monad.Predicate.html#1510" class="Bound"
+      >P</a
+      ><a name="1521" class="Symbol"
+      >)</a
+      ><a name="1522"
+      > </a
+      ><a name="1523" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1524"
+      > </a
+      ><a name="1525" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1526"
+      > </a
+      ><a name="1527" href="Category.Monad.Predicate.html#1510" class="Bound"
+      >P</a
+      ><a name="1528"
+      >
+  </a
+      ><a name="1531" href="Category.Monad.Predicate.html#1499" class="Function"
+      >join?</a
+      ><a name="1536"
+      > </a
+      ><a name="1537" href="Category.Monad.Predicate.html#1537" class="Bound"
+      >m</a
+      ><a name="1538"
+      > </a
+      ><a name="1539" class="Symbol"
+      >=</a
+      ><a name="1540"
+      > </a
+      ><a name="1541" href="Category.Monad.Predicate.html#1537" class="Bound"
+      >m</a
+      ><a name="1542"
+      > </a
+      ><a name="1543" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >?&gt;=</a
+      ><a name="1546"
+      > </a
+      ><a name="1547" href="Function.html#1012" class="Function"
+      >id</a
+      ><a name="1549"
+      >
+
+  </a
+      ><a name="1553" href="Category.Monad.Predicate.html#1553" class="Function Operator"
+      >_&gt;?&gt;_</a
+      ><a name="1558"
+      > </a
+      ><a name="1559" class="Symbol"
+      >:</a
+      ><a name="1560"
+      > </a
+      ><a name="1561" class="Symbol"
+      >{</a
+      ><a name="1562" href="Category.Monad.Predicate.html#1562" class="Bound"
+      >P</a
+      ><a name="1563"
+      > </a
+      ><a name="1564" href="Category.Monad.Predicate.html#1564" class="Bound"
+      >Q</a
+      ><a name="1565"
+      > </a
+      ><a name="1566" href="Category.Monad.Predicate.html#1566" class="Bound"
+      >R</a
+      ><a name="1567"
+      > </a
+      ><a name="1568" class="Symbol"
+      >:</a
+      ><a name="1569"
+      > </a
+      ><a name="1570" class="Symbol"
+      >_}</a
+      ><a name="1572"
+      > </a
+      ><a name="1573" class="Symbol"
+      >&#8594;</a
+      ><a name="1574"
+      > </a
+      ><a name="1575" href="Category.Monad.Predicate.html#1562" class="Bound"
+      >P</a
+      ><a name="1576"
+      > </a
+      ><a name="1577" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1578"
+      > </a
+      ><a name="1579" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1580"
+      > </a
+      ><a name="1581" href="Category.Monad.Predicate.html#1564" class="Bound"
+      >Q</a
+      ><a name="1582"
+      > </a
+      ><a name="1583" class="Symbol"
+      >&#8594;</a
+      ><a name="1584"
+      > </a
+      ><a name="1585" href="Category.Monad.Predicate.html#1564" class="Bound"
+      >Q</a
+      ><a name="1586"
+      > </a
+      ><a name="1587" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1588"
+      > </a
+      ><a name="1589" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1590"
+      > </a
+      ><a name="1591" href="Category.Monad.Predicate.html#1566" class="Bound"
+      >R</a
+      ><a name="1592"
+      > </a
+      ><a name="1593" class="Symbol"
+      >&#8594;</a
+      ><a name="1594"
+      > </a
+      ><a name="1595" href="Category.Monad.Predicate.html#1562" class="Bound"
+      >P</a
+      ><a name="1596"
+      > </a
+      ><a name="1597" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1598"
+      > </a
+      ><a name="1599" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1600"
+      > </a
+      ><a name="1601" href="Category.Monad.Predicate.html#1566" class="Bound"
+      >R</a
+      ><a name="1602"
+      >
+  </a
+      ><a name="1605" href="Category.Monad.Predicate.html#1605" class="Bound"
+      >f</a
+      ><a name="1606"
+      > </a
+      ><a name="1607" href="Category.Monad.Predicate.html#1553" class="Function Operator"
+      >&gt;?&gt;</a
+      ><a name="1610"
+      > </a
+      ><a name="1611" href="Category.Monad.Predicate.html#1611" class="Bound"
+      >g</a
+      ><a name="1612"
+      > </a
+      ><a name="1613" class="Symbol"
+      >=</a
+      ><a name="1614"
+      > </a
+      ><a name="1615" href="Category.Monad.Predicate.html#1197" class="Field Operator"
+      >_=&lt;?_</a
+      ><a name="1620"
+      > </a
+      ><a name="1621" href="Category.Monad.Predicate.html#1611" class="Bound"
+      >g</a
+      ><a name="1622"
+      > </a
+      ><a name="1623" href="Function.html#713" class="Function Operator"
+      >&#8728;</a
+      ><a name="1624"
+      > </a
+      ><a name="1625" href="Category.Monad.Predicate.html#1605" class="Bound"
+      >f</a
+      ><a name="1626"
+      >
+
+  </a
+      ><a name="1630" href="Category.Monad.Predicate.html#1630" class="Function Operator"
+      >_&lt;?&lt;_</a
+      ><a name="1635"
+      > </a
+      ><a name="1636" class="Symbol"
+      >:</a
+      ><a name="1637"
+      > </a
+      ><a name="1638" class="Symbol"
+      >&#8704;</a
+      ><a name="1639"
+      > </a
+      ><a name="1640" class="Symbol"
+      >{</a
+      ><a name="1641" href="Category.Monad.Predicate.html#1641" class="Bound"
+      >P</a
+      ><a name="1642"
+      > </a
+      ><a name="1643" href="Category.Monad.Predicate.html#1643" class="Bound"
+      >Q</a
+      ><a name="1644"
+      > </a
+      ><a name="1645" href="Category.Monad.Predicate.html#1645" class="Bound"
+      >R</a
+      ><a name="1646" class="Symbol"
+      >}</a
+      ><a name="1647"
+      > </a
+      ><a name="1648" class="Symbol"
+      >&#8594;</a
+      ><a name="1649"
+      > </a
+      ><a name="1650" href="Category.Monad.Predicate.html#1643" class="Bound"
+      >Q</a
+      ><a name="1651"
+      > </a
+      ><a name="1652" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1653"
+      > </a
+      ><a name="1654" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1655"
+      > </a
+      ><a name="1656" href="Category.Monad.Predicate.html#1645" class="Bound"
+      >R</a
+      ><a name="1657"
+      > </a
+      ><a name="1658" class="Symbol"
+      >&#8594;</a
+      ><a name="1659"
+      > </a
+      ><a name="1660" href="Category.Monad.Predicate.html#1641" class="Bound"
+      >P</a
+      ><a name="1661"
+      > </a
+      ><a name="1662" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1663"
+      > </a
+      ><a name="1664" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1665"
+      > </a
+      ><a name="1666" href="Category.Monad.Predicate.html#1643" class="Bound"
+      >Q</a
+      ><a name="1667"
+      > </a
+      ><a name="1668" class="Symbol"
+      >&#8594;</a
+      ><a name="1669"
+      > </a
+      ><a name="1670" href="Category.Monad.Predicate.html#1641" class="Bound"
+      >P</a
+      ><a name="1671"
+      > </a
+      ><a name="1672" href="Relation.Unary.html#1774" class="Function Operator"
+      >&#8838;</a
+      ><a name="1673"
+      > </a
+      ><a name="1674" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1675"
+      > </a
+      ><a name="1676" href="Category.Monad.Predicate.html#1645" class="Bound"
+      >R</a
+      ><a name="1677"
+      >
+  </a
+      ><a name="1680" href="Category.Monad.Predicate.html#1680" class="Bound"
+      >g</a
+      ><a name="1681"
+      > </a
+      ><a name="1682" href="Category.Monad.Predicate.html#1630" class="Function Operator"
+      >&lt;?&lt;</a
+      ><a name="1685"
+      > </a
+      ><a name="1686" href="Category.Monad.Predicate.html#1686" class="Bound"
+      >f</a
+      ><a name="1687"
+      > </a
+      ><a name="1688" class="Symbol"
+      >=</a
+      ><a name="1689"
+      > </a
+      ><a name="1690" href="Category.Monad.Predicate.html#1686" class="Bound"
+      >f</a
+      ><a name="1691"
+      > </a
+      ><a name="1692" href="Category.Monad.Predicate.html#1553" class="Function Operator"
+      >&gt;?&gt;</a
+      ><a name="1695"
+      > </a
+      ><a name="1696" href="Category.Monad.Predicate.html#1680" class="Bound"
+      >g</a
+      ><a name="1697"
+      >
+
+  </a
+      ><a name="1701" class="Comment"
+      >-- ``Angelic'' operations (the player knows the state).</a
+      ><a name="1756"
+      >
+
+  </a
+      ><a name="1760" href="Category.Monad.Predicate.html#1760" class="Function"
+      >rawIMonad</a
+      ><a name="1769"
+      > </a
+      ><a name="1770" class="Symbol"
+      >:</a
+      ><a name="1771"
+      > </a
+      ><a name="1772" href="Category.Monad.Indexed.html#385" class="Record"
+      >RawIMonad</a
+      ><a name="1781"
+      > </a
+      ><a name="1782" class="Symbol"
+      >(&#955;</a
+      ><a name="1784"
+      > </a
+      ><a name="1785" href="Category.Monad.Predicate.html#1785" class="Bound"
+      >i</a
+      ><a name="1786"
+      > </a
+      ><a name="1787" href="Category.Monad.Predicate.html#1787" class="Bound"
+      >j</a
+      ><a name="1788"
+      > </a
+      ><a name="1789" href="Category.Monad.Predicate.html#1789" class="Bound"
+      >A</a
+      ><a name="1790"
+      > </a
+      ><a name="1791" class="Symbol"
+      >&#8594;</a
+      ><a name="1792"
+      > </a
+      ><a name="1793" href="Category.Monad.Predicate.html#1785" class="Bound"
+      >i</a
+      ><a name="1794"
+      > </a
+      ><a name="1795" href="Relation.Unary.html#925" class="Function Operator"
+      >&#8712;</a
+      ><a name="1796"
+      > </a
+      ><a name="1797" href="Category.Monad.Predicate.html#976" class="Bound"
+      >M</a
+      ><a name="1798"
+      > </a
+      ><a name="1799" class="Symbol"
+      >(</a
+      ><a name="1800" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65371;</a
+      ><a name="1801"
+      > </a
+      ><a name="1802" href="Category.Monad.Predicate.html#1787" class="Bound"
+      >j</a
+      ><a name="1803"
+      > </a
+      ><a name="1804" href="Category.Monad.Predicate.html#720" class="Function Operator"
+      >&#65373;&#215;</a
+      ><a name="1806"
+      > </a
+      ><a name="1807" href="Category.Monad.Predicate.html#1789" class="Bound"
+      >A</a
+      ><a name="1808" class="Symbol"
+      >))</a
+      ><a name="1810"
+      >
+  </a
+      ><a name="1813" href="Category.Monad.Predicate.html#1760" class="Function"
+      >rawIMonad</a
+      ><a name="1822"
+      > </a
+      ><a name="1823" class="Symbol"
+      >=</a
+      ><a name="1824"
+      > </a
+      ><a name="1825" class="Keyword"
+      >record</a
+      ><a name="1831"
+      >
+    </a
+      ><a name="1836" class="Symbol"
+      >{</a
+      ><a name="1837"
+      > </a
+      ><a name="1838" class="Field"
+      >return</a
+      ><a name="1844"
+      > </a
+      ><a name="1845" class="Symbol"
+      >=</a
+      ><a name="1846"
+      > </a
+      ><a name="1847" class="Symbol"
+      >&#955;</a
+      ><a name="1848"
+      > </a
+      ><a name="1849" href="Category.Monad.Predicate.html#1849" class="Bound"
+      >x</a
+      ><a name="1850"
+      > </a
+      ><a name="1851" class="Symbol"
+      >&#8594;</a
+      ><a name="1852"
+      > </a
+      ><a name="1853" href="Category.Monad.Predicate.html#1167" class="Field"
+      >return?</a
+      ><a name="1860"
+      > </a
+      ><a name="1861" class="Symbol"
+      >(</a
+      ><a name="1862" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1866"
+      > </a
+      ><a name="1867" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1868"
+      > </a
+      ><a name="1869" href="Category.Monad.Predicate.html#1849" class="Bound"
+      >x</a
+      ><a name="1870" class="Symbol"
+      >)</a
+      ><a name="1871"
+      >
+    </a
+      ><a name="1876" class="Symbol"
+      >;</a
+      ><a name="1877"
+      > </a
+      ><a name="1878" class="Field Operator"
+      >_&gt;&gt;=_</a
+      ><a name="1883"
+      >  </a
+      ><a name="1885" class="Symbol"
+      >=</a
+      ><a name="1886"
+      > </a
+      ><a name="1887" class="Symbol"
+      >&#955;</a
+      ><a name="1888"
+      > </a
+      ><a name="1889" href="Category.Monad.Predicate.html#1889" class="Bound"
+      >m</a
+      ><a name="1890"
+      > </a
+      ><a name="1891" href="Category.Monad.Predicate.html#1891" class="Bound"
+      >k</a
+      ><a name="1892"
+      > </a
+      ><a name="1893" class="Symbol"
+      >&#8594;</a
+      ><a name="1894"
+      > </a
+      ><a name="1895" href="Category.Monad.Predicate.html#1889" class="Bound"
+      >m</a
+      ><a name="1896"
+      > </a
+      ><a name="1897" href="Category.Monad.Predicate.html#1240" class="Function Operator"
+      >?&gt;=</a
+      ><a name="1900"
+      > </a
+      ><a name="1901" class="Symbol"
+      >&#955;</a
+      ><a name="1902"
+      > </a
+      ><a name="1903" class="Symbol"
+      >{</a
+      ><a name="1904"
+      > </a
+      ><a name="1905" class="Symbol"
+      >{</a
+      ><a name="1906" class="DottedPattern Symbol"
+      >._</a
+      ><a name="1908" class="Symbol"
+      >}</a
+      ><a name="1909"
+      > </a
+      ><a name="1910" class="Symbol"
+      >(</a
+      ><a name="1911" href="Relation.Binary.Core.html#4653" class="InductiveConstructor"
+      >refl</a
+      ><a name="1915"
+      > </a
+      ><a name="1916" href="Data.Product.html#509" class="InductiveConstructor Operator"
+      >,</a
+      ><a name="1917"
+      > </a
+      ><a name="1918" href="Category.Monad.Predicate.html#1918" class="Bound"
+      >x</a
+      ><a name="1919" class="Symbol"
+      >)</a
+      ><a name="1920"
+      > </a
+      ><a name="1921" class="Symbol"
+      >&#8594;</a
+      ><a name="1922"
+      > </a
+      ><a name="1923" href="Category.Monad.Predicate.html#1891" class="Bound"
+      >k</a
+      ><a name="1924"
+      > </a
+      ><a name="1925" href="Category.Monad.Predicate.html#1918" class="Bound"
+      >x</a
+      ><a name="1926"
+      > </a
+      ><a name="1927" class="Symbol"
+      >}</a
+      ><a name="1928"
+      >
+    </a
+      ><a name="1933" class="Symbol"
+      >}</a
+      ><a name="1934"
+      >
+
+  </a
+      ><a name="1938" class="Keyword"
+      >open</a
+      ><a name="1942"
+      > </a
+      ><a name="1943" href="Category.Monad.Indexed.html#385" class="Module"
+      >RawIMonad</a
+      ><a name="1952"
+      > </a
+      ><a name="1953" href="Category.Monad.Predicate.html#1760" class="Function"
+      >rawIMonad</a
+      ><a name="1962"
+      > </a
+      ><a name="1963" class="Keyword"
+      >public</a
+      ><a name="1969"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>

@@ -1,0 +1,1018 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+><head
+  ><title
+    >Data.Star.BoundedVec</title
+    ><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"
+     /><meta http-equiv="Content-Style-Type" content="text/css"
+     /><link href="Agda.css" rel="stylesheet" type="text/css"
+     /></head
+  ><body
+  ><pre
+    ><a name="1" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="73"
+      >
+</a
+      ><a name="74" class="Comment"
+      >-- The Agda standard library</a
+      ><a name="102"
+      >
+</a
+      ><a name="103" class="Comment"
+      >--</a
+      ><a name="105"
+      >
+</a
+      ><a name="106" class="Comment"
+      >-- Bounded vectors (inefficient implementation)</a
+      ><a name="153"
+      >
+</a
+      ><a name="154" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="226"
+      >
+
+</a
+      ><a name="228" class="Comment"
+      >-- Vectors of a specified maximum length.</a
+      ><a name="269"
+      >
+
+</a
+      ><a name="271" class="Keyword"
+      >module</a
+      ><a name="277"
+      > </a
+      ><a name="278" href="Data.Star.BoundedVec.html#1" class="Module"
+      >Data.Star.BoundedVec</a
+      ><a name="298"
+      > </a
+      ><a name="299" class="Keyword"
+      >where</a
+      ><a name="304"
+      >
+
+</a
+      ><a name="306" class="Keyword"
+      >open</a
+      ><a name="310"
+      > </a
+      ><a name="311" class="Keyword"
+      >import</a
+      ><a name="317"
+      > </a
+      ><a name="318" href="Data.Star.html#1" class="Module"
+      >Data.Star</a
+      ><a name="327"
+      >
+</a
+      ><a name="328" class="Keyword"
+      >open</a
+      ><a name="332"
+      > </a
+      ><a name="333" class="Keyword"
+      >import</a
+      ><a name="339"
+      > </a
+      ><a name="340" href="Data.Star.Nat.html#1" class="Module"
+      >Data.Star.Nat</a
+      ><a name="353"
+      >
+</a
+      ><a name="354" class="Keyword"
+      >open</a
+      ><a name="358"
+      > </a
+      ><a name="359" class="Keyword"
+      >import</a
+      ><a name="365"
+      > </a
+      ><a name="366" href="Data.Star.Decoration.html#1" class="Module"
+      >Data.Star.Decoration</a
+      ><a name="386"
+      >
+</a
+      ><a name="387" class="Keyword"
+      >open</a
+      ><a name="391"
+      > </a
+      ><a name="392" class="Keyword"
+      >import</a
+      ><a name="398"
+      > </a
+      ><a name="399" href="Data.Star.Pointer.html#1" class="Module"
+      >Data.Star.Pointer</a
+      ><a name="416"
+      >
+</a
+      ><a name="417" class="Keyword"
+      >open</a
+      ><a name="421"
+      > </a
+      ><a name="422" class="Keyword"
+      >import</a
+      ><a name="428"
+      > </a
+      ><a name="429" href="Data.Star.List.html#1" class="Module"
+      >Data.Star.List</a
+      ><a name="443"
+      > </a
+      ><a name="444" class="Keyword"
+      >using</a
+      ><a name="449"
+      > </a
+      ><a name="450" class="Symbol"
+      >(</a
+      ><a name="451"
+      >List</a
+      ><a name="455" class="Symbol"
+      >)</a
+      ><a name="456"
+      >
+</a
+      ><a name="457" class="Keyword"
+      >open</a
+      ><a name="461"
+      > </a
+      ><a name="462" class="Keyword"
+      >import</a
+      ><a name="468"
+      > </a
+      ><a name="469" href="Data.Unit.html#1" class="Module"
+      >Data.Unit</a
+      ><a name="478"
+      >
+</a
+      ><a name="479" class="Keyword"
+      >open</a
+      ><a name="483"
+      > </a
+      ><a name="484" class="Keyword"
+      >import</a
+      ><a name="490"
+      > </a
+      ><a name="491" href="Function.html#1" class="Module"
+      >Function</a
+      ><a name="499"
+      >
+</a
+      ><a name="500" class="Keyword"
+      >import</a
+      ><a name="506"
+      > </a
+      ><a name="507" href="Data.Maybe.html#1" class="Module"
+      >Data.Maybe</a
+      ><a name="517"
+      > </a
+      ><a name="518" class="Symbol"
+      >as</a
+      ><a name="520"
+      > </a
+      ><a name="521" class="Module"
+      >Maybe</a
+      ><a name="526"
+      >
+</a
+      ><a name="527" class="Keyword"
+      >open</a
+      ><a name="531"
+      > </a
+      ><a name="532" class="Keyword"
+      >import</a
+      ><a name="538"
+      > </a
+      ><a name="539" href="Relation.Binary.html#1" class="Module"
+      >Relation.Binary</a
+      ><a name="554"
+      >
+</a
+      ><a name="555" class="Keyword"
+      >open</a
+      ><a name="559"
+      > </a
+      ><a name="560" class="Keyword"
+      >import</a
+      ><a name="566"
+      > </a
+      ><a name="567" href="Relation.Binary.Consequences.html#1" class="Module"
+      >Relation.Binary.Consequences</a
+      ><a name="595"
+      >
+
+</a
+      ><a name="597" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="669"
+      >
+</a
+      ><a name="670" class="Comment"
+      >-- The type</a
+      ><a name="681"
+      >
+
+</a
+      ><a name="683" class="Comment"
+      >-- Finite sets decorated with elements (note the use of suc).</a
+      ><a name="744"
+      >
+
+</a
+      ><a name="746" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="756"
+      > </a
+      ><a name="757" class="Symbol"
+      >:</a
+      ><a name="758"
+      > </a
+      ><a name="759" class="PrimitiveType"
+      >Set</a
+      ><a name="762"
+      > </a
+      ><a name="763" class="Symbol"
+      >&#8594;</a
+      ><a name="764"
+      > </a
+      ><a name="765" href="Data.Star.Nat.html#407" class="Function"
+      >&#8469;</a
+      ><a name="766"
+      > </a
+      ><a name="767" class="Symbol"
+      >&#8594;</a
+      ><a name="768"
+      > </a
+      ><a name="769" class="PrimitiveType"
+      >Set</a
+      ><a name="772"
+      >
+</a
+      ><a name="773" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="783"
+      > </a
+      ><a name="784" href="Data.Star.BoundedVec.html#784" class="Bound"
+      >a</a
+      ><a name="785"
+      > </a
+      ><a name="786" href="Data.Star.BoundedVec.html#786" class="Bound"
+      >n</a
+      ><a name="787"
+      > </a
+      ><a name="788" class="Symbol"
+      >=</a
+      ><a name="789"
+      > </a
+      ><a name="790" href="Data.Star.Pointer.html#1178" class="Function"
+      >Any</a
+      ><a name="793"
+      > </a
+      ><a name="794" class="Symbol"
+      >(&#955;</a
+      ><a name="796"
+      > </a
+      ><a name="797" href="Data.Star.BoundedVec.html#797" class="Bound"
+      >_</a
+      ><a name="798"
+      > </a
+      ><a name="799" class="Symbol"
+      >&#8594;</a
+      ><a name="800"
+      > </a
+      ><a name="801" href="Data.Star.BoundedVec.html#784" class="Bound"
+      >a</a
+      ><a name="802" class="Symbol"
+      >)</a
+      ><a name="803"
+      > </a
+      ><a name="804" class="Symbol"
+      >(&#955;</a
+      ><a name="806"
+      > </a
+      ><a name="807" href="Data.Star.BoundedVec.html#807" class="Bound"
+      >_</a
+      ><a name="808"
+      > </a
+      ><a name="809" class="Symbol"
+      >&#8594;</a
+      ><a name="810"
+      > </a
+      ><a name="811" href="Data.Unit.html#653" class="Record"
+      >&#8868;</a
+      ><a name="812" class="Symbol"
+      >)</a
+      ><a name="813"
+      > </a
+      ><a name="814" class="Symbol"
+      >(</a
+      ><a name="815" href="Data.Star.Nat.html#481" class="Function"
+      >suc</a
+      ><a name="818"
+      > </a
+      ><a name="819" href="Data.Star.BoundedVec.html#786" class="Bound"
+      >n</a
+      ><a name="820" class="Symbol"
+      >)</a
+      ><a name="821"
+      >
+
+</a
+      ><a name="823" href="Data.Star.BoundedVec.html#823" class="Function"
+      >[]</a
+      ><a name="825"
+      > </a
+      ><a name="826" class="Symbol"
+      >:</a
+      ><a name="827"
+      > </a
+      ><a name="828" class="Symbol"
+      >&#8704;</a
+      ><a name="829"
+      > </a
+      ><a name="830" class="Symbol"
+      >{</a
+      ><a name="831" href="Data.Star.BoundedVec.html#831" class="Bound"
+      >a</a
+      ><a name="832"
+      > </a
+      ><a name="833" href="Data.Star.BoundedVec.html#833" class="Bound"
+      >n</a
+      ><a name="834" class="Symbol"
+      >}</a
+      ><a name="835"
+      > </a
+      ><a name="836" class="Symbol"
+      >&#8594;</a
+      ><a name="837"
+      > </a
+      ><a name="838" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="848"
+      > </a
+      ><a name="849" href="Data.Star.BoundedVec.html#831" class="Bound"
+      >a</a
+      ><a name="850"
+      > </a
+      ><a name="851" href="Data.Star.BoundedVec.html#833" class="Bound"
+      >n</a
+      ><a name="852"
+      >
+</a
+      ><a name="853" href="Data.Star.BoundedVec.html#823" class="Function"
+      >[]</a
+      ><a name="855"
+      > </a
+      ><a name="856" class="Symbol"
+      >=</a
+      ><a name="857"
+      > </a
+      ><a name="858" href="Data.Star.Pointer.html#1308" class="Function"
+      >this</a
+      ><a name="862"
+      > </a
+      ><a name="863" href="Data.Unit.html#681" class="InductiveConstructor"
+      >tt</a
+      ><a name="865"
+      >
+
+</a
+      ><a name="867" class="Keyword"
+      >infixr</a
+      ><a name="873"
+      > </a
+      ><a name="874" class="Number"
+      >5</a
+      ><a name="875"
+      > _&#8759;_
+
+</a
+      ><a name="881" href="Data.Star.BoundedVec.html#881" class="Function Operator"
+      >_&#8759;_</a
+      ><a name="884"
+      > </a
+      ><a name="885" class="Symbol"
+      >:</a
+      ><a name="886"
+      > </a
+      ><a name="887" class="Symbol"
+      >&#8704;</a
+      ><a name="888"
+      > </a
+      ><a name="889" class="Symbol"
+      >{</a
+      ><a name="890" href="Data.Star.BoundedVec.html#890" class="Bound"
+      >a</a
+      ><a name="891"
+      > </a
+      ><a name="892" href="Data.Star.BoundedVec.html#892" class="Bound"
+      >n</a
+      ><a name="893" class="Symbol"
+      >}</a
+      ><a name="894"
+      > </a
+      ><a name="895" class="Symbol"
+      >&#8594;</a
+      ><a name="896"
+      > </a
+      ><a name="897" href="Data.Star.BoundedVec.html#890" class="Bound"
+      >a</a
+      ><a name="898"
+      > </a
+      ><a name="899" class="Symbol"
+      >&#8594;</a
+      ><a name="900"
+      > </a
+      ><a name="901" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="911"
+      > </a
+      ><a name="912" href="Data.Star.BoundedVec.html#890" class="Bound"
+      >a</a
+      ><a name="913"
+      > </a
+      ><a name="914" href="Data.Star.BoundedVec.html#892" class="Bound"
+      >n</a
+      ><a name="915"
+      > </a
+      ><a name="916" class="Symbol"
+      >&#8594;</a
+      ><a name="917"
+      > </a
+      ><a name="918" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="928"
+      > </a
+      ><a name="929" href="Data.Star.BoundedVec.html#890" class="Bound"
+      >a</a
+      ><a name="930"
+      > </a
+      ><a name="931" class="Symbol"
+      >(</a
+      ><a name="932" href="Data.Star.Nat.html#481" class="Function"
+      >suc</a
+      ><a name="935"
+      > </a
+      ><a name="936" href="Data.Star.BoundedVec.html#892" class="Bound"
+      >n</a
+      ><a name="937" class="Symbol"
+      >)</a
+      ><a name="938"
+      >
+</a
+      ><a name="939" href="Data.Star.BoundedVec.html#881" class="Function Operator"
+      >_&#8759;_</a
+      ><a name="942"
+      > </a
+      ><a name="943" class="Symbol"
+      >=</a
+      ><a name="944"
+      > </a
+      ><a name="945" href="Data.Star.Pointer.html#1461" class="Function"
+      >that</a
+      ><a name="949"
+      >
+
+</a
+      ><a name="951" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="1023"
+      >
+</a
+      ><a name="1024" class="Comment"
+      >-- Increasing the bound</a
+      ><a name="1047"
+      >
+
+</a
+      ><a name="1049" class="Comment"
+      >-- Note that this operation is linear in the length of the list.</a
+      ><a name="1113"
+      >
+
+</a
+      ><a name="1115" href="Data.Star.BoundedVec.html#1115" class="Function"
+      >&#8593;</a
+      ><a name="1116"
+      > </a
+      ><a name="1117" class="Symbol"
+      >:</a
+      ><a name="1118"
+      > </a
+      ><a name="1119" class="Symbol"
+      >&#8704;</a
+      ><a name="1120"
+      > </a
+      ><a name="1121" class="Symbol"
+      >{</a
+      ><a name="1122" href="Data.Star.BoundedVec.html#1122" class="Bound"
+      >a</a
+      ><a name="1123"
+      > </a
+      ><a name="1124" href="Data.Star.BoundedVec.html#1124" class="Bound"
+      >n</a
+      ><a name="1125" class="Symbol"
+      >}</a
+      ><a name="1126"
+      > </a
+      ><a name="1127" class="Symbol"
+      >&#8594;</a
+      ><a name="1128"
+      > </a
+      ><a name="1129" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="1139"
+      > </a
+      ><a name="1140" href="Data.Star.BoundedVec.html#1122" class="Bound"
+      >a</a
+      ><a name="1141"
+      > </a
+      ><a name="1142" href="Data.Star.BoundedVec.html#1124" class="Bound"
+      >n</a
+      ><a name="1143"
+      > </a
+      ><a name="1144" class="Symbol"
+      >&#8594;</a
+      ><a name="1145"
+      > </a
+      ><a name="1146" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="1156"
+      > </a
+      ><a name="1157" href="Data.Star.BoundedVec.html#1122" class="Bound"
+      >a</a
+      ><a name="1158"
+      > </a
+      ><a name="1159" class="Symbol"
+      >(</a
+      ><a name="1160" href="Data.Star.Nat.html#481" class="Function"
+      >suc</a
+      ><a name="1163"
+      > </a
+      ><a name="1164" href="Data.Star.BoundedVec.html#1124" class="Bound"
+      >n</a
+      ><a name="1165" class="Symbol"
+      >)</a
+      ><a name="1166"
+      >
+</a
+      ><a name="1167" href="Data.Star.BoundedVec.html#1115" class="Function"
+      >&#8593;</a
+      ><a name="1168"
+      > </a
+      ><a name="1169" class="Symbol"
+      >{</a
+      ><a name="1170" href="Data.Star.BoundedVec.html#1170" class="Bound"
+      >a</a
+      ><a name="1171" class="Symbol"
+      >}</a
+      ><a name="1172"
+      > </a
+      ><a name="1173" class="Symbol"
+      >=</a
+      ><a name="1174"
+      > </a
+      ><a name="1175" href="Data.Star.html#1592" class="Function"
+      >gmap</a
+      ><a name="1179"
+      > </a
+      ><a name="1180" href="Data.Star.BoundedVec.html#1199" class="Function"
+      >inc</a
+      ><a name="1183"
+      > </a
+      ><a name="1184" href="Data.Star.BoundedVec.html#1237" class="Function"
+      >lift</a
+      ><a name="1188"
+      >
+  </a
+      ><a name="1191" class="Keyword"
+      >where</a
+      ><a name="1196"
+      >
+  </a
+      ><a name="1199" href="Data.Star.BoundedVec.html#1199" class="Function"
+      >inc</a
+      ><a name="1202"
+      > </a
+      ><a name="1203" class="Symbol"
+      >=</a
+      ><a name="1204"
+      > </a
+      ><a name="1205" href="Data.Maybe.html#1761" class="Function"
+      >Maybe.map</a
+      ><a name="1214"
+      > </a
+      ><a name="1215" class="Symbol"
+      >(</a
+      ><a name="1216" href="Relation.Binary.Consequences.html#3272" class="Function"
+      >map-NonEmpty</a
+      ><a name="1228"
+      > </a
+      ><a name="1229" href="Data.Star.Nat.html#481" class="Function"
+      >suc</a
+      ><a name="1232" class="Symbol"
+      >)</a
+      ><a name="1233"
+      >
+
+  </a
+      ><a name="1237" href="Data.Star.BoundedVec.html#1237" class="Function"
+      >lift</a
+      ><a name="1241"
+      > </a
+      ><a name="1242" class="Symbol"
+      >:</a
+      ><a name="1243"
+      > </a
+      ><a name="1244" href="Data.Star.Pointer.html#556" class="Datatype"
+      >Pointer</a
+      ><a name="1251"
+      > </a
+      ><a name="1252" class="Symbol"
+      >(&#955;</a
+      ><a name="1254"
+      > </a
+      ><a name="1255" href="Data.Star.BoundedVec.html#1255" class="Bound"
+      >_</a
+      ><a name="1256"
+      > </a
+      ><a name="1257" class="Symbol"
+      >&#8594;</a
+      ><a name="1258"
+      > </a
+      ><a name="1259" href="Data.Star.BoundedVec.html#1170" class="Bound"
+      >a</a
+      ><a name="1260" class="Symbol"
+      >)</a
+      ><a name="1261"
+      > </a
+      ><a name="1262" class="Symbol"
+      >(&#955;</a
+      ><a name="1264"
+      > </a
+      ><a name="1265" href="Data.Star.BoundedVec.html#1265" class="Bound"
+      >_</a
+      ><a name="1266"
+      > </a
+      ><a name="1267" class="Symbol"
+      >&#8594;</a
+      ><a name="1268"
+      > </a
+      ><a name="1269" href="Data.Unit.html#653" class="Record"
+      >&#8868;</a
+      ><a name="1270" class="Symbol"
+      >)</a
+      ><a name="1271"
+      > </a
+      ><a name="1272" href="Relation.Binary.Core.html#1218" class="Function Operator"
+      >=[</a
+      ><a name="1274"
+      > </a
+      ><a name="1275" href="Data.Star.BoundedVec.html#1199" class="Function"
+      >inc</a
+      ><a name="1278"
+      > </a
+      ><a name="1279" href="Relation.Binary.Core.html#1218" class="Function Operator"
+      >]&#8658;</a
+      ><a name="1281"
+      >
+         </a
+      ><a name="1291" href="Data.Star.Pointer.html#556" class="Datatype"
+      >Pointer</a
+      ><a name="1298"
+      > </a
+      ><a name="1299" class="Symbol"
+      >(&#955;</a
+      ><a name="1301"
+      > </a
+      ><a name="1302" href="Data.Star.BoundedVec.html#1302" class="Bound"
+      >_</a
+      ><a name="1303"
+      > </a
+      ><a name="1304" class="Symbol"
+      >&#8594;</a
+      ><a name="1305"
+      > </a
+      ><a name="1306" href="Data.Star.BoundedVec.html#1170" class="Bound"
+      >a</a
+      ><a name="1307" class="Symbol"
+      >)</a
+      ><a name="1308"
+      > </a
+      ><a name="1309" class="Symbol"
+      >(&#955;</a
+      ><a name="1311"
+      > </a
+      ><a name="1312" href="Data.Star.BoundedVec.html#1312" class="Bound"
+      >_</a
+      ><a name="1313"
+      > </a
+      ><a name="1314" class="Symbol"
+      >&#8594;</a
+      ><a name="1315"
+      > </a
+      ><a name="1316" href="Data.Unit.html#653" class="Record"
+      >&#8868;</a
+      ><a name="1317" class="Symbol"
+      >)</a
+      ><a name="1318"
+      >
+  </a
+      ><a name="1321" href="Data.Star.BoundedVec.html#1237" class="Function"
+      >lift</a
+      ><a name="1325"
+      > </a
+      ><a name="1326" class="Symbol"
+      >(</a
+      ><a name="1327" href="Data.Star.Pointer.html#664" class="InductiveConstructor"
+      >step</a
+      ><a name="1331"
+      > </a
+      ><a name="1332" href="Data.Star.BoundedVec.html#1332" class="Bound"
+      >x</a
+      ><a name="1333" class="Symbol"
+      >)</a
+      ><a name="1334"
+      > </a
+      ><a name="1335" class="Symbol"
+      >=</a
+      ><a name="1336"
+      > </a
+      ><a name="1337" href="Data.Star.Pointer.html#664" class="InductiveConstructor"
+      >step</a
+      ><a name="1341"
+      > </a
+      ><a name="1342" href="Data.Star.BoundedVec.html#1332" class="Bound"
+      >x</a
+      ><a name="1343"
+      >
+  </a
+      ><a name="1346" href="Data.Star.BoundedVec.html#1237" class="Function"
+      >lift</a
+      ><a name="1350"
+      > </a
+      ><a name="1351" class="Symbol"
+      >(</a
+      ><a name="1352" href="Data.Star.Pointer.html#827" class="InductiveConstructor"
+      >done</a
+      ><a name="1356"
+      > </a
+      ><a name="1357" class="Symbol"
+      >_)</a
+      ><a name="1359"
+      > </a
+      ><a name="1360" class="Symbol"
+      >=</a
+      ><a name="1361"
+      > </a
+      ><a name="1362" href="Data.Star.Pointer.html#827" class="InductiveConstructor"
+      >done</a
+      ><a name="1366"
+      > </a
+      ><a name="1367" class="Symbol"
+      >_</a
+      ><a name="1368"
+      >
+
+</a
+      ><a name="1370" class="Comment"
+      >------------------------------------------------------------------------</a
+      ><a name="1442"
+      >
+</a
+      ><a name="1443" class="Comment"
+      >-- Conversions</a
+      ><a name="1457"
+      >
+
+</a
+      ><a name="1459" href="Data.Star.BoundedVec.html#1459" class="Function"
+      >fromList</a
+      ><a name="1467"
+      > </a
+      ><a name="1468" class="Symbol"
+      >:</a
+      ><a name="1469"
+      > </a
+      ><a name="1470" class="Symbol"
+      >&#8704;</a
+      ><a name="1471"
+      > </a
+      ><a name="1472" class="Symbol"
+      >{</a
+      ><a name="1473" href="Data.Star.BoundedVec.html#1473" class="Bound"
+      >a</a
+      ><a name="1474" class="Symbol"
+      >}</a
+      ><a name="1475"
+      > </a
+      ><a name="1476" class="Symbol"
+      >&#8594;</a
+      ><a name="1477"
+      > </a
+      ><a name="1478" class="Symbol"
+      >(</a
+      ><a name="1479" href="Data.Star.BoundedVec.html#1479" class="Bound"
+      >xs</a
+      ><a name="1481"
+      > </a
+      ><a name="1482" class="Symbol"
+      >:</a
+      ><a name="1483"
+      > </a
+      ><a name="1484" href="Data.Star.List.html#365" class="Function"
+      >List</a
+      ><a name="1488"
+      > </a
+      ><a name="1489" href="Data.Star.BoundedVec.html#1473" class="Bound"
+      >a</a
+      ><a name="1490" class="Symbol"
+      >)</a
+      ><a name="1491"
+      > </a
+      ><a name="1492" class="Symbol"
+      >&#8594;</a
+      ><a name="1493"
+      > </a
+      ><a name="1494" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="1504"
+      > </a
+      ><a name="1505" href="Data.Star.BoundedVec.html#1473" class="Bound"
+      >a</a
+      ><a name="1506"
+      > </a
+      ><a name="1507" class="Symbol"
+      >(</a
+      ><a name="1508" href="Data.Star.Nat.html#537" class="Function"
+      >length</a
+      ><a name="1514"
+      > </a
+      ><a name="1515" href="Data.Star.BoundedVec.html#1479" class="Bound"
+      >xs</a
+      ><a name="1517" class="Symbol"
+      >)</a
+      ><a name="1518"
+      >
+</a
+      ><a name="1519" href="Data.Star.BoundedVec.html#1459" class="Function"
+      >fromList</a
+      ><a name="1527"
+      > </a
+      ><a name="1528" href="Data.Star.html#614" class="InductiveConstructor"
+      >&#949;</a
+      ><a name="1529"
+      >        </a
+      ><a name="1537" class="Symbol"
+      >=</a
+      ><a name="1538"
+      > </a
+      ><a name="1539" href="Data.Star.BoundedVec.html#823" class="Function"
+      >[]</a
+      ><a name="1541"
+      >
+</a
+      ><a name="1542" href="Data.Star.BoundedVec.html#1459" class="Function"
+      >fromList</a
+      ><a name="1550"
+      > </a
+      ><a name="1551" class="Symbol"
+      >(</a
+      ><a name="1552" href="Data.Star.BoundedVec.html#1552" class="Bound"
+      >x</a
+      ><a name="1553"
+      > </a
+      ><a name="1554" href="Data.Star.html#641" class="InductiveConstructor Operator"
+      >&#9669;</a
+      ><a name="1555"
+      > </a
+      ><a name="1556" href="Data.Star.BoundedVec.html#1556" class="Bound"
+      >xs</a
+      ><a name="1558" class="Symbol"
+      >)</a
+      ><a name="1559"
+      > </a
+      ><a name="1560" class="Symbol"
+      >=</a
+      ><a name="1561"
+      > </a
+      ><a name="1562" href="Data.Star.BoundedVec.html#1552" class="Bound"
+      >x</a
+      ><a name="1563"
+      > </a
+      ><a name="1564" href="Data.Star.BoundedVec.html#881" class="Function Operator"
+      >&#8759;</a
+      ><a name="1565"
+      > </a
+      ><a name="1566" href="Data.Star.BoundedVec.html#1459" class="Function"
+      >fromList</a
+      ><a name="1574"
+      > </a
+      ><a name="1575" href="Data.Star.BoundedVec.html#1556" class="Bound"
+      >xs</a
+      ><a name="1577"
+      >
+
+</a
+      ><a name="1579" href="Data.Star.BoundedVec.html#1579" class="Function"
+      >toList</a
+      ><a name="1585"
+      > </a
+      ><a name="1586" class="Symbol"
+      >:</a
+      ><a name="1587"
+      > </a
+      ><a name="1588" class="Symbol"
+      >&#8704;</a
+      ><a name="1589"
+      > </a
+      ><a name="1590" class="Symbol"
+      >{</a
+      ><a name="1591" href="Data.Star.BoundedVec.html#1591" class="Bound"
+      >a</a
+      ><a name="1592"
+      > </a
+      ><a name="1593" href="Data.Star.BoundedVec.html#1593" class="Bound"
+      >n</a
+      ><a name="1594" class="Symbol"
+      >}</a
+      ><a name="1595"
+      > </a
+      ><a name="1596" class="Symbol"
+      >&#8594;</a
+      ><a name="1597"
+      > </a
+      ><a name="1598" href="Data.Star.BoundedVec.html#746" class="Function"
+      >BoundedVec</a
+      ><a name="1608"
+      > </a
+      ><a name="1609" href="Data.Star.BoundedVec.html#1591" class="Bound"
+      >a</a
+      ><a name="1610"
+      > </a
+      ><a name="1611" href="Data.Star.BoundedVec.html#1593" class="Bound"
+      >n</a
+      ><a name="1612"
+      > </a
+      ><a name="1613" class="Symbol"
+      >&#8594;</a
+      ><a name="1614"
+      > </a
+      ><a name="1615" href="Data.Star.List.html#365" class="Function"
+      >List</a
+      ><a name="1619"
+      > </a
+      ><a name="1620" href="Data.Star.BoundedVec.html#1591" class="Bound"
+      >a</a
+      ><a name="1621"
+      >
+</a
+      ><a name="1622" href="Data.Star.BoundedVec.html#1579" class="Function"
+      >toList</a
+      ><a name="1628"
+      > </a
+      ><a name="1629" href="Data.Star.BoundedVec.html#1629" class="Bound"
+      >xs</a
+      ><a name="1631"
+      > </a
+      ><a name="1632" class="Symbol"
+      >=</a
+      ><a name="1633"
+      > </a
+      ><a name="1634" href="Data.Star.html#1592" class="Function"
+      >gmap</a
+      ><a name="1638"
+      > </a
+      ><a name="1639" class="Symbol"
+      >(</a
+      ><a name="1640" href="Function.html#1053" class="Function"
+      >const</a
+      ><a name="1645"
+      > </a
+      ><a name="1646" href="Data.Unit.html#681" class="InductiveConstructor"
+      >tt</a
+      ><a name="1648" class="Symbol"
+      >)</a
+      ><a name="1649"
+      > </a
+      ><a name="1650" href="Data.Star.Decoration.html#1100" class="Function"
+      >decoration</a
+      ><a name="1660"
+      > </a
+      ><a name="1661" class="Symbol"
+      >(</a
+      ><a name="1662" href="Data.Star.Pointer.html#2773" class="Function"
+      >init</a
+      ><a name="1666"
+      > </a
+      ><a name="1667" href="Data.Star.BoundedVec.html#1629" class="Bound"
+      >xs</a
+      ><a name="1669" class="Symbol"
+      >)</a
+      ><a name="1670"
+      >
+</a
+      ></pre
+    ></body
+  ></html
+>
