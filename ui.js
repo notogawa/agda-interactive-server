@@ -9,10 +9,14 @@ $(document).ready(function() {
             console.log(e);
         },
         function (msg) {
-            $('#agda_prompt').append(msg.information);
+            var prompt = $('#agda_prompt');
+            prompt.append(msg.information);
+            prompt.scrollTop(prompt.prop('scrollHeight'));
         },
         function (msg) {
-            $('#agda_prompt').append(msg.information + "\n");
+            var prompt = $('#agda_prompt');
+            prompt.append(msg.information + "\n");
+            prompt.scrollTop(prompt.prop('scrollHeight'));
         },
         function (msg) {
             var sel = $('#agda_command_args_meta');
