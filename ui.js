@@ -47,7 +47,7 @@ $(document).ready(function() {
                             var span = $('<span>');
                             var code = source.substring(cur, from);
                             span.append(code);
-                            if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
+                            if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
                             ace_line.append(span);
                             cur = from;
                         }
@@ -57,7 +57,7 @@ $(document).ready(function() {
                             var code = source.substring(cur, to);
                             span.append(code);
                             span.addClass(highlight.meta.aspect);
-                            if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
+                            if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
                             ace_line.append(span);
                             cur = to;
                         }
@@ -66,7 +66,7 @@ $(document).ready(function() {
                 var span = $('<span>');
                 var code = source.substring(cur, pos + t.length);
                 span.append(code);
-                if (code.match(/\s*\?\s*/)) { span.addClass('UnsolvedMeta'); }
+                if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
                 ace_line.append(span);
                 pos = pos + t.length + 1;
             });
