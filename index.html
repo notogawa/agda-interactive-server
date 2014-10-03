@@ -10,7 +10,7 @@
   <div id="agda_editor" style="float: left">
     <input id="agda_buffer_save" type="button" value="Save"/>
     <input id="agda_buffer_load" type="button" value="Load"/>
-    <input id="agda_input" type="text"/>
+    <input id="agda_input" type="text" autocomplete="off"/>
     <div id="agda_buffer" style="width: 55em; height: 768px; overflow-y: auto;">module Main where
 
 import Relation.Binary.PropositionalEquality as PropEq
@@ -50,11 +50,13 @@ test-next-weekday = ?</div>
 <pre id="agda_running_prompt" style="background-color: #000; color: #FFF; width: 40em; height: 200px; overflow-y: auto;"></pre>
 
 <script src="jquery.js"></script>
+<script src="jquery-ui.js"></script>
 <script src="agda.js"></script>
 <script src="input.js"></script>
 <script src="ace.js"></script>
 <script src="ui.js"></script>
 <link href="normalize.css" rel="stylesheet" type="text/css">
+<link href="jquery-ui.css" rel="stylesheet" type="text/css">
 <link href="Agda.css" rel="stylesheet" type="text/css">
 </body>
 </html>

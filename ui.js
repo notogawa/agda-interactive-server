@@ -115,8 +115,7 @@ $(document).ready(function() {
         return agda.sendConstraints();
     });
     var input = new Input();
-    $('#agda_input').keyup(function (e) {
-        var str = $('#agda_input').val();
-        return console.log(input.translate(str));
+    $("#agda_input").autocomplete({
+        source: function(req, resp) { resp(input.translate(req.term)); }
     });
 });

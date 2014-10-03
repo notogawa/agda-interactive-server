@@ -164,8 +164,10 @@ simpleWaiApp req respond = do
     ["jquery.js"]     -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery.js" Nothing
     ["agda.js"]       -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
     ["input.js"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "input.js" Nothing
+    ["jquery-ui.js"]  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery-ui.js" Nothing
     ["ui.js"]         -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
     ["normalize.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "normalize.css" Nothing
+    ["jquery-ui.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "jquery-ui.css" Nothing
     ["Agda.css"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "Agda.css" Nothing
     ["ace.js"]        -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ace.js" Nothing
     m : _  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] ("agda-stdlib-0.8/" ++ T.unpack m) Nothing
