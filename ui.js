@@ -9,12 +9,13 @@ $(document).ready(function() {
             console.log(e);
         },
         function (msg) {
-            var prompt = $('#agda_prompt');
+            var prompt = $('#agda_running_prompt');
             prompt.append(msg.information);
             prompt.scrollTop(prompt.prop('scrollHeight'));
         },
         function (msg) {
-            var prompt = $('#agda_prompt');
+            var prompt = $('#agda_display_prompt');
+            prompt.empty();
             prompt.append(msg.information + "\n");
             prompt.scrollTop(prompt.prop('scrollHeight'));
         },

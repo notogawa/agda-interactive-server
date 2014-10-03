@@ -7,7 +7,7 @@
 <body>
 
 <form onsubmit="return false;">
-  <div id="agda_buffer" style="width: 60em; height: 500px; overflow-y: auto; float: left">module Main where
+  <div id="agda_buffer" style="width: 60em; height: 768px; overflow-y: auto; float: left">module Main where
 
 import Relation.Binary.PropositionalEquality as PropEq
 open PropEq using (_≡_; refl; sym; cong; trans)
@@ -41,7 +41,8 @@ test-next-weekday = ?</div>
   <input id="agda_command_constraints" type="button" value="Constraints"/>
 </form>
 
-<pre id="agda_prompt" style="background-color: #000; color: #FFF; height: 200px; overflow-y: auto;"></pre>
+<pre id="agda_display_prompt" style="background-color: #000; color: #FFF; height: 200px; overflow-y: auto;"></pre>
+<pre id="agda_running_prompt" style="background-color: #000; color: #FFF; height: 200px; overflow-y: auto;"></pre>
 
 <script src="jquery.js"></script>
 <script src="agda.js"></script>
