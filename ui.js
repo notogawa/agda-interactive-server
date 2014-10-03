@@ -28,7 +28,7 @@ $(document).ready(function() {
                 msg.metas.forEach(function (meta) {
                     var opt = $('<option>');
                     opt.attr('value', meta);
-                    opt.append(meta);
+                    opt.append('?'+meta);
                     sel.append(opt);
                 });
                 sel.css('display', 'inline');
