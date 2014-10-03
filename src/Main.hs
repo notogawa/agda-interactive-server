@@ -163,6 +163,7 @@ simpleWaiApp req respond = do
   case Wai.pathInfo $ req of
     ["jquery.js"]     -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery.js" Nothing
     ["agda.js"]       -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
+    ["input.js"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "input.js" Nothing
     ["ui.js"]         -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
     ["normalize.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "normalize.css" Nothing
     ["Agda.css"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "Agda.css" Nothing

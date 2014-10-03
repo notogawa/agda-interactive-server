@@ -174,8 +174,8 @@ var Input = (function () {
         this._dict["u=="] = ["⟰"]; this._dict["u-2"] = ["⇈"];                            this._dict["u-d-"] = ["⇅"];
         this._dict["d=="] = ["⟱"]; this._dict["d-2"] = ["⇊"];                            this._dict["d-u-"] = ["⇵"];
 
-        this._dict["l--" ] = ["⟵"]; this._dict["<--" ] = ["⟵"]; this._dict["l~" ] = ["↜" "⇜"];
-        this._dict["r--" ] = ["⟶"]; this._dict["-->" ] = ["⟶"]; this._dict["r~" ] = ["↝" "⇝" "⟿"];
+        this._dict["l--" ] = ["⟵"]; this._dict["<--" ] = ["⟵"]; this._dict["l~"  ] = ["↜", "⇜"];
+        this._dict["r--" ] = ["⟶"]; this._dict["-->" ] = ["⟶"]; this._dict["r~" ] = ["↝", "⇝", "⟿"];
         this._dict["lr--"] = ["⟷"]; this._dict["<-->"] = ["⟷"]; this._dict["lr~"] = ["↭"];
 
         this._dict["l-n" ] = ["↚"]; this._dict["<-n" ] = ["↚"]; this._dict["l=n" ] = ["⇍"];
@@ -218,34 +218,34 @@ var Input = (function () {
 
         // Squares.
 
-        this._dict["sq" ] = to_list("■□◼◻◾◽▣▢▤▥▦▧▨▩◧◨◩◪◫◰◱◲◳"];
-        this._dict["sqb"] = to_list("■◼◾"];
-        this._dict["sqw"] = to_list("□◻◽"];
+        this._dict["sq" ] = to_list("■□◼◻◾◽▣▢▤▥▦▧▨▩◧◨◩◪◫◰◱◲◳");
+        this._dict["sqb"] = to_list("■◼◾");
+        this._dict["sqw"] = to_list("□◻◽");
         this._dict["sq."] = ["▣"];
         this._dict["sqo"] = ["▢"];
 
         // Rectangles.
 
-        this._dict["re" ] = to_list("▬▭▮▯"];
-        this._dict["reb"] = to_list("▬▮"];
-        this._dict["rew"] = to_list("▭▯"];
+        this._dict["re" ] = to_list("▬▭▮▯");
+        this._dict["reb"] = to_list("▬▮");
+        this._dict["rew"] = to_list("▭▯");
 
         // Parallelograms.
 
-        this._dict["pa" ] = to_list("▰▱"];
+        this._dict["pa" ] = to_list("▰▱");
         this._dict["pab" ] = ["▰"];
         this._dict["paw" ] = ["▱"];
 
         // Diamonds.
 
-        this._dict["di" ] = to_list("◆◇◈"];
+        this._dict["di" ] = to_list("◆◇◈");
         this._dict["dib" ] = ["◆"];
         this._dict["diw" ] = ["◇"];
         this._dict["di." ] = ["◈"];
 
         // Circles.
 
-        this._dict["ci"  ] = to_list("●○◎◌◯◍◐◑◒◓◔◕◖◗◠◡◴◵◶◷⚆⚇⚈⚉"];
+        this._dict["ci"  ] = to_list("●○◎◌◯◍◐◑◒◓◔◕◖◗◠◡◴◵◶◷⚆⚇⚈⚉");
         this._dict["cib"  ] = ["●"];
         this._dict["ciw"  ] = ["○"];
         this._dict["ci."  ] = ["◎"];
@@ -254,8 +254,8 @@ var Input = (function () {
 
         // Stars.
 
-        this._dict["st"  ] = to_list("⋆✦✧✶✴✹ ★☆✪✫✯✰✵✷✸"];
-        this._dict["st4" ] = to_list("✦✧"];
+        this._dict["st"  ] = to_list("⋆✦✧✶✴✹ ★☆✪✫✯✰✵✷✸");
+        this._dict["st4" ] = to_list("✦✧");
         this._dict["st6"  ] = ["✶"];
         this._dict["st8"  ] = ["✴"];
         this._dict["st12" ] = ["✹"];
@@ -286,8 +286,8 @@ var Input = (function () {
 
         // Parentheses.
 
-        this._dict["("] = to_list("([{⁅⁽₍〈⎴⟅⟦⟨⟪⦃〈《「『【〔〖〚︵︷︹︻︽︿﹁﹃﹙﹛﹝（［｛｢"];
-        this._dict[")"] = to_list(")]}⁆⁾₎〉⎵⟆⟧⟩⟫⦄〉》」』】〕〗〛︶︸︺︼︾﹀﹂﹄﹚﹜﹞）］｝｣"];
+        this._dict["("] = to_list("([{⁅⁽₍〈⎴⟅⟦⟨⟪⦃〈《「『【〔〖〚︵︷︹︻︽︿﹁﹃﹙﹛﹝（［｛｢");
+        this._dict[")"] = to_list(")]}⁆⁾₎〉⎵⟆⟧⟩⟫⦄〉》」』】〕〗〛︶︸︺︼︾﹀﹂﹄﹚﹜﹞）］｝｣");
 
         this._dict["[[" ] = ["⟦"];
         this._dict["]]" ] = ["⟧"];
@@ -306,23 +306,23 @@ var Input = (function () {
 
         // Primes.
 
-        this._dict["'"] = to_list("′″‴⁗"];
-        this._dict["`"] = to_list("‵‶‷"];
+        this._dict["'"] = to_list("′″‴⁗");
+        this._dict["`"] = to_list("‵‶‷");
 
         // Fractions.
 
-        this._dict["frac"] = to_list("¼½¾⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅟"];
+        this._dict["frac"] = to_list("¼½¾⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅟");
 
         // Bullets.
 
-        this._dict["bu" ] = to_list("•◦‣⁌⁍"];
+        this._dict["bu" ] = to_list("•◦‣⁌⁍");
         this._dict["bub" ] = ["•"];
         this._dict["buw" ] = ["◦"];
         this._dict["but" ] = ["‣"];
 
         // Musical symbols.
 
-        this._dict["note"] = to_list("♩♪♫♬"];
+        this._dict["note"] = to_list("♩♪♫♬");
         this._dict["b"    ] = ["♭"];
         this._dict["#"    ] = ["♯"];
 
@@ -334,14 +334,14 @@ var Input = (function () {
         this._dict["^i"         ] = ["ⁱ"];
         this._dict["!!"         ] = ["‼"];
         this._dict["??"         ] = ["⁇"];
-        this._dict["?!"         ] = ["‽" "⁈"];
+        this._dict["?!"         ] = ["‽", "⁈"];
         this._dict["!?"         ] = ["⁉"];
-        this._dict["die"       ] = to_list("⚀⚁⚂⚃⚄⚅"];
-        this._dict["asterisk"  ] = to_list("⁎⁑⁂✢✣✤✥✱✲✳✺✻✼✽❃❉❊❋"];
-        this._dict["8<"         ] = ["✂" "✄"];
+        this._dict["die"       ] = to_list("⚀⚁⚂⚃⚄⚅");
+        this._dict["asterisk"  ] = to_list("⁎⁑⁂✢✣✤✥✱✲✳✺✻✼✽❃❉❊❋");
+        this._dict["8<"         ] = ["✂", "✄"];
         this._dict["tie"        ] = ["⁀"];
         this._dict["undertie"   ] = ["‿"];
-        this._dict["apl"       ] = to_list("⌶⌷⌸⌹⌺⌻⌼⌽⌾⌿⍀⍁⍂⍃⍄⍅⍆⍇⍈⍉⍊⍋⍌⍍⍎⍏⍐⍑⍒⍓⍔⍕⍖⍗⍘⍙⍚⍛⍜⍝⍞⍟⍠⍡⍢⍣⍤⍥⍦⍧⍨⍩⍪⍫⍬⍭⍮⍯⍰⍱⍲⍳⍴⍵⍶⍷⍸⍹⍺⎕"];
+        this._dict["apl"       ] = to_list("⌶⌷⌸⌹⌺⌻⌼⌽⌾⌿⍀⍁⍂⍃⍄⍅⍆⍇⍈⍉⍊⍋⍌⍍⍎⍏⍐⍑⍒⍓⍔⍕⍖⍗⍘⍙⍚⍛⍜⍝⍞⍟⍠⍡⍢⍣⍤⍥⍦⍧⍨⍩⍪⍫⍬⍭⍮⍯⍰⍱⍲⍳⍴⍵⍶⍷⍸⍹⍺⎕");
     }
 
     function translate(input) {
@@ -350,14 +350,7 @@ var Input = (function () {
 
     Input.prototype = {
         constructor: Input,
-        translate: translate,
-        sendConstraints: sendConstraints,
-        sendSolveAll: sendSolveAll,
-        sendGive: sendGive,
-        sendRefine: sendRefine,
-        sendMetas: sendMetas,
-        sendAuto: sendAuto,
-        highlight: highlight
+        translate: translate
     };
 
     return Input;
