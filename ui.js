@@ -1,5 +1,14 @@
 $(document).ready(function() {
     var editor = ace.edit("agda_buffer");
+    editor.commands.addCommand({
+        name: 'agda-input-trans',
+        bindKey: {win: '\\',  mac: '\\'},
+        exec: function(editor) {
+            // TODO: open window & translate & insert char
+            console.log(translation('eqn'));
+        },
+        readOnly: true // false if this command should not apply in readOnly mode
+    });
     var agda = new Agda(
         ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
         function () {
