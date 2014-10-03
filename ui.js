@@ -80,6 +80,13 @@ $(document).ready(function() {
     editor.on('change', function (e) {
         return agda.sendLoad(editor.getValue()); // TODO: イマイチだな？
     });
+    $('#agda_buffer_save').click(function () {
+        return window.localStorage.setItem("agda_buffer", editor.getValue());
+    });
+    $('#agda_buffer_load').click(function () {
+        editor.setValue(window.localStorage.getItem("agda_buffer"));
+        return agda.sendLoad(editor.getValue());
+    });
     $('#agda_command_reload').click(function () {
         return agda.sendLoad(editor.getValue());
     });
