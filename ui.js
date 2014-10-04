@@ -8,6 +8,7 @@ $(document).ready(function() {
             var im = $('#agda_input');
             im.css('left', cursor.left);
             im.css('top', cursor.top);
+            im.val('');
             im.show();
             im.focus();
         },
