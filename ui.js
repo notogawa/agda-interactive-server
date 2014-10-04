@@ -113,6 +113,10 @@ $(document).ready(function() {
     });
     var input = new Input();
     $("#agda_input").autocomplete({
-        source: function(req, resp) { resp(input.translate(req.term)); }
+        source: function (req, resp) { resp(input.translate(req.term)); },
+        select: function (event, ui) {
+            editor.insert(ui.item.value);
+            editor.focus();
+        }
     });
 });
