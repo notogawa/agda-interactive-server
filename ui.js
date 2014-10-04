@@ -3,7 +3,14 @@ $(document).ready(function() {
     editor.commands.addCommand({
         name: 'agda-input-trans',
         bindKey: {win: '\\',  mac: '\\'},
-        exec: function(editor) { $('#agda_input').focus(); },
+        exec: function(editor) {
+            var cursor = $('.ace_cursor').offset();
+            var im = $('#agda_input');
+            im.css('left', cursor.left);
+            im.css('top', cursor.top);
+            im.show();
+            im.focus();
+        },
         readOnly: true
     });
     var agda = new Agda(
@@ -117,6 +124,7 @@ $(document).ready(function() {
         select: function (event, ui) {
             editor.insert(ui.item.value);
             editor.focus();
+            $('#agda_input').hide();
         }
     });
 });
