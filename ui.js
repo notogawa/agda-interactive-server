@@ -3,11 +3,8 @@ $(document).ready(function() {
     editor.commands.addCommand({
         name: 'agda-input-trans',
         bindKey: {win: '\\',  mac: '\\'},
-        exec: function(editor) {
-            $('#agda_input').focus();
-            console.log(translation('eqn'));
-        },
-        readOnly: true // false if this command should not apply in readOnly mode
+        exec: function(editor) { $('#agda_input').focus(); },
+        readOnly: true
     });
     var agda = new Agda(
         ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
