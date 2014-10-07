@@ -77,6 +77,7 @@ response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = l
           , "meta" JSON..=
             JSON.object
             [ "aspect" JSON..= fromAspect (Highlight.aspect meta)
+            , "otherAspects" JSON..= map show (Highlight.otherAspects meta)
             ]
           ]
         | (range, meta) <- Highlight.ranges highlightingInfo

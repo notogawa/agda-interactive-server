@@ -76,6 +76,9 @@ $(document).ready(function() {
                             var code = source.substring(cur, to);
                             span.append(code);
                             span.addClass(highlight.meta.aspect);
+                            highlight.meta.otherAspects.forEach(function (aspect) {
+                                span.addClass(aspect);
+                            });
                             if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
                             ace_line.append(span);
                             cur = to;
