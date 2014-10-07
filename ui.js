@@ -14,6 +14,7 @@ $(document).ready(function() {
         },
         readOnly: true
     });
+    var metas = [];
     var agda = new Agda(
         ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
         function () {
@@ -48,10 +49,18 @@ $(document).ready(function() {
                 sel.css('display', 'inline');
             }
         },
+        function (msg) {
+            var pos = editor.getSession().getDocument().indexToPosition(metas[msg.meta], 0);
+            editor.moveCursorToPosition(pos);
+            editor.clearSelection();
+            editor.removeWordRight();
+            editor.insert(msg.result);
+        },
         function (highlights) {
             var source = editor.getValue();
             var pos = 0;
             var hs = [];
+            metas = [];
             $.extend(true, hs, highlights);
             $('.ace_line').map(function () {return $(this);}).get().forEach(function (ace_line) {
                 var t = ace_line.text();
@@ -66,7 +75,10 @@ $(document).ready(function() {
                             var span = $('<span>');
                             var code = source.substring(cur, from);
                             span.append(code);
-                            if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
+                            if (code.match(/^\s*\?\s*$/)) {
+                                metas.push(cur+code.indexOf('?'));
+                                span.addClass('UnsolvedMeta');
+                            }
                             ace_line.append(span);
                             cur = from;
                         }
@@ -79,7 +91,10 @@ $(document).ready(function() {
                             highlight.meta.otherAspects.forEach(function (aspect) {
                                 span.addClass(aspect);
                             });
-                            if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
+                            if (code.match(/^\s*\?\s*$/)) {
+                                metas.push(cur+code.indexOf('?'));
+                                span.addClass('UnsolvedMeta');
+                            }
                             ace_line.append(span);
                             cur = to;
                         }
@@ -88,7 +103,10 @@ $(document).ready(function() {
                 var span = $('<span>');
                 var code = source.substring(cur, pos + t.length);
                 span.append(code);
-                if (code.match(/^\s*\?\s*$/)) { span.addClass('UnsolvedMeta'); }
+                if (code.match(/^\s*\?\s*$/)) {
+                    metas.push(cur+code.indexOf('?'));
+                    span.addClass('UnsolvedMeta');
+                }
                 ace_line.append(span);
                 pos = pos + t.length + 1;
             });

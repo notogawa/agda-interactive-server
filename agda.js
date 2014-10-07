@@ -28,7 +28,8 @@ var Agda = (function () {
     }
 
     function Agda (remoteHost, onOpen, onError,
-                   onRunningInfo, onDisplayInfo, onMetas, onHighlight) {
+                   onRunningInfo, onDisplayInfo, onMetas, onGiveResult,
+                   onHighlight) {
         this._debug = (typeof debug === 'undefined') ? false : true;
         try {
             this._connection = new WebSocket(remoteHost);
@@ -49,6 +50,8 @@ var Agda = (function () {
                 return onDisplayInfo(msg.contents);
             } else if (msg.type == 'metas') {
                 return onMetas(msg.contents);
+            } else if (msg.type == 'give') {
+                return onGiveResult(msg.contents);
             } else if (msg.type == 'highlight') {
                 highlights = mergeHighlights(highlights, msg.contents);
                 return onHighlight(highlights);
