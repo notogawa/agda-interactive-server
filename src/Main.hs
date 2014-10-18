@@ -8,11 +8,13 @@ import qualified Network.WebSockets as WS
 import qualified Network.HTTP.Types.Status as Status
 import qualified Network.HTTP.Types.Header as Header
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BS8
 import qualified Data.ByteString.Lazy as LBS
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Aeson as JSON
+import Data.Monoid ( (<>) )
 import Control.Applicative
 import Control.Concurrent
 import Control.Monad
@@ -160,19 +162,16 @@ simpleWSWaiApp :: Wai.Application
 simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerApp simpleWaiApp
 
 simpleWaiApp :: Wai.Application
-simpleWaiApp req respond = do
-  case Wai.pathInfo $ req of
-    ["jquery.js"]     -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery.js" Nothing
-    ["agda.js"]       -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "agda.js" Nothing
-    ["input.js"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "input.js" Nothing
-    ["jquery-ui.js"]  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "jquery-ui.js" Nothing
-    ["ui.js"]         -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ui.js" Nothing
-    ["normalize.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "normalize.css" Nothing
-    ["jquery-ui.css"] -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "jquery-ui.css" Nothing
-    ["Agda.css"]      -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/css")] "Agda.css" Nothing
-    ["ace.js"]        -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "application/javascript")] "ace.js" Nothing
-    m : _  -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] ("agda-stdlib-0.8/" ++ T.unpack m) Nothing
-    []                -> respond $ Wai.responseFile Status.status200 [(Header.hContentType, "text/html")] "index.html" Nothing
+simpleWaiApp req respond =
+    case Wai.pathInfo $ req of
+      []   -> resFile "text/html" "public/index.html"
+      path -> resFile (ct $ last path) (BS8.unpack $ "public" <> Wai.rawPathInfo req)
+    where
+      resFile contentType path = respond $ Wai.responseFile Status.status200 [(Header.hContentType, contentType)] path Nothing
+      ct f | ".js" `T.isSuffixOf` f  = "application/javascript"
+           | ".css" `T.isSuffixOf` f = "text/css"
+           | ".png" `T.isSuffixOf` f = "image/png"
+           | otherwise               = "text/html"
 
 spawnPingThread :: WS.Connection -> Int -> IO ThreadId
 spawnPingThread conn interval =
