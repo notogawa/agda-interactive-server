@@ -64,6 +64,9 @@ $(document).ready(function() {
             var hs = [];
             metas = [];
             $.extend(true, hs, highlights);
+            var startLine = $('.ace_gutter-cell').text()[0];
+            skipSource = source.split(/\n/).slice(0, startLine-1).join('\n');
+            if (1 < startLine) pos = skipSource.length + 1;
             $('.ace_line').map(function () {return $(this);}).get().forEach(function (ace_line) {
                 var t = ace_line.text();
                 ace_line.empty();
