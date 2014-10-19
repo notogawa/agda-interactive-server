@@ -2080,7 +2080,9 @@ var Input = (function () {
         if (typeof this._tex[input] !== "undefined") {
             candidates = candidates.concat(this._tex[input]);
         }
-        return candidates;
+        return candidates.filter(function (x, i, self) {
+            return self.indexOf(x) === i;
+        });
     }
 
     Input.prototype = {
