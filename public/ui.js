@@ -121,8 +121,22 @@ $(document).ready(function() {
             });
         }
     );
+    var needReload = false;
+    var reloadDelay = 0;
     editor.on('change', function (e) {
-        return agda.sendLoad(editor.getValue()); // TODO: イマイチだな？
+        needReload = true;
+        reloadDelay = 50;
+    });
+    $(function(){
+        setInterval(function () {
+            if (needReload) {
+                reloadDelay--;
+                if (!reloadDelay) {
+                    agda.sendLoad(editor.getValue());
+                    needReload = false;
+                }
+            }
+        },10);
     });
     $('#agda_buffer_save').click(function () {
         return window.localStorage.setItem("agda_buffer", editor.getValue());
