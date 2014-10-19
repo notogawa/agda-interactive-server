@@ -30,8 +30,6 @@ import qualified Agda.Interaction.Highlighting.Range as Highlight
 import qualified Agda.Syntax.Common as Agda
 import qualified Agda.Syntax.Position as Agda
 
--- instance JSON.ToJSON Agda.CompressedFile where
-
 top :: WS.Connection -> String -> Agda.TCM ()
 top conn dir = do
   Agda.setInteractionOutputCallback $ response conn
@@ -169,14 +167,11 @@ main :: IO ()
 main = do
   let port = 3000
   let setting = Warp.setPort port Warp.defaultSettings
-  -- putStrLn $ "start server port=" ++ show port
-  Warp.runSettings setting simpleWSWaiApp
+  let app = WaiWS.websocketsOr WS.defaultConnectionOptions appWebSocketAgda appStaticFiles
+  Warp.runSettings setting app
 
-simpleWSWaiApp :: Wai.Application
-simpleWSWaiApp = WaiWS.websocketsOr WS.defaultConnectionOptions simpleWSServerApp simpleWaiApp
-
-simpleWaiApp :: Wai.Application
-simpleWaiApp req respond =
+appStaticFiles :: Wai.Application
+appStaticFiles req respond =
     case Wai.pathInfo $ req of
       []   -> resFile "text/html" "public/index.html"
       path -> resFile (ct $ last path) (BS8.unpack $ "public" <> Wai.rawPathInfo req)
@@ -193,10 +188,9 @@ spawnPingThread conn interval =
       threadDelay $ 1000 * 1000 * interval
       WS.sendPing conn ("" :: BS.ByteString)
 
-simpleWSServerApp :: WS.ServerApp
-simpleWSServerApp pdconn = do
-  -- putStrLn "Websocket Request received"
-  conn <- WS.acceptRequest pdconn
+appWebSocketAgda :: WS.ServerApp
+appWebSocketAgda req = do
+  conn <- WS.acceptRequest req
   withSystemTempDirectory "ais" $ \dir -> do
     _ <- spawnPingThread conn 10
     _ <- Agda.runTCMTop $ top conn dir
