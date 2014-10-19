@@ -64,6 +64,9 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
           MessageGive iid range expr -> do
             run (Agda.Cmd_give iid range expr)
             dispatch conn dir
+          MessageRefine iid range expr -> do
+            run (Agda.Cmd_refine iid range expr)
+            dispatch conn dir
 
 response :: WS.Connection -> Agda.Response -> Agda.TCM ()
 response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
@@ -193,6 +196,7 @@ data Message = MessageLoad T.Text
              | MessageSolveAll
              | MessageConstraints
              | MessageGive Agda.InteractionId Agda.Range String
+             | MessageRefine Agda.InteractionId Agda.Range String
                deriving (Eq, Show)
 
 instance JSON.FromJSON Message where
@@ -208,5 +212,9 @@ instance JSON.FromJSON Message where
                   <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
                   <*> return Agda.noRange
                   <*> (v JSON..: "contents" >>= (JSON..: "expr"))
+        "refine" -> MessageGive
+                    <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
+                    <*> return Agda.noRange
+                    <*> (v JSON..: "contents" >>= (JSON..: "expr"))
         _ -> mzero
     parseJSON _ = mzero

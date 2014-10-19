@@ -53,7 +53,7 @@ $(document).ready(function() {
             var pos = editor.getSession().getDocument().indexToPosition(metas[msg.meta], 0);
             editor.moveCursorToPosition(pos);
             editor.clearSelection();
-            editor.removeWordRight();
+            editor.remove('?');
             editor.insert(msg.result);
         },
         function (highlights) {
@@ -122,9 +122,6 @@ $(document).ready(function() {
         editor.setValue(window.localStorage.getItem("agda_buffer"));
         return agda.sendLoad(editor.getValue());
     });
-    $('#agda_command_reload').click(function () {
-        return agda.sendLoad(editor.getValue());
-    });
     $('#agda_command_metas').click(function () {
         return agda.sendMetas();
     });
@@ -134,11 +131,11 @@ $(document).ready(function() {
             $('#agda_command_args_expr').val()
         );
     });
-    $('#agda_command_solveAll').click(function () {
-        return agda.sendSolveAll();
-    });
-    $('#agda_command_constraints').click(function () {
-        return agda.sendConstraints();
+    $('#agda_command_refine').click(function () {
+        return agda.sendRefine(
+            $('#agda_command_args_meta').val(),
+            $('#agda_command_args_expr').val()
+        );
     });
     var input = new Input();
     $("#agda_input").autocomplete({
