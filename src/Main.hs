@@ -212,7 +212,7 @@ instance JSON.FromJSON Message where
                   <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
                   <*> return Agda.noRange
                   <*> (v JSON..: "contents" >>= (JSON..: "expr"))
-        "refine" -> MessageGive
+        "refine" -> MessageRefine
                     <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
                     <*> return Agda.noRange
                     <*> (v JSON..: "contents" >>= (JSON..: "expr"))
