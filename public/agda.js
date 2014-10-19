@@ -28,7 +28,8 @@ var Agda = (function () {
     }
 
     function Agda (remoteHost, onOpen, onError,
-                   onRunningInfo, onDisplayInfo, onMetas, onGiveResult,
+                   onRunningInfo, onDisplayInfo, onMetas,
+                   onGiveResult, onCaseResult,
                    onHighlight) {
         this._debug = (typeof debug === 'undefined') ? false : true;
         try {
@@ -52,6 +53,8 @@ var Agda = (function () {
                 return onMetas(msg.contents);
             } else if (msg.type == 'give') {
                 return onGiveResult(msg.contents);
+            } else if (msg.type == 'case') {
+                return onCaseResult(msg.contents);
             } else if (msg.type == 'highlight') {
                 highlights = mergeHighlights(highlights, msg.contents);
                 return onHighlight(highlights);
@@ -92,6 +95,14 @@ var Agda = (function () {
         msg.contents.expr = expr;
         this._connection.send(JSON.stringify(msg));
     }
+    function sendCase (meta, expr) {
+        var msg = {};
+        msg.type = 'case';
+        msg.contents = {};
+        msg.contents.meta = parseInt(meta, 10);
+        msg.contents.expr = expr;
+        this._connection.send(JSON.stringify(msg));
+    }
     function sendMetas () {
         var msg = {};
         msg.type = 'metas';
@@ -116,6 +127,7 @@ var Agda = (function () {
         sendSolveAll: sendSolveAll,
         sendGive: sendGive,
         sendRefine: sendRefine,
+        sendCase: sendCase,
         sendMetas: sendMetas,
         sendAuto: sendAuto,
         highlight: highlight

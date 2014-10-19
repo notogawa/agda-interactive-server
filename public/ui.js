@@ -50,11 +50,13 @@ $(document).ready(function() {
             }
         },
         function (msg) {
-            var pos = editor.getSession().getDocument().indexToPosition(metas[msg.meta], 0);
-            editor.moveCursorToPosition(pos);
-            editor.clearSelection();
             editor.remove('?');
             editor.insert(msg.result);
+        },
+        function (msg) {
+            editor.removeToLineEnd();
+            editor.removeToLineStart();
+            msg.result.forEach(function (x) { editor.insert(x+"\n"); });
         },
         function (highlights) {
             var source = editor.getValue();
@@ -126,13 +128,28 @@ $(document).ready(function() {
         return agda.sendMetas();
     });
     $('#agda_command_give').click(function () {
+        var pos = editor.getSession().getDocument().indexToPosition(metas[$('#agda_command_args_meta').val()], 0);
+        editor.moveCursorToPosition(pos);
+        editor.clearSelection();
         return agda.sendGive(
             $('#agda_command_args_meta').val(),
             $('#agda_command_args_expr').val()
         );
     });
     $('#agda_command_refine').click(function () {
+        var pos = editor.getSession().getDocument().indexToPosition(metas[$('#agda_command_args_meta').val()], 0);
+        editor.moveCursorToPosition(pos);
+        editor.clearSelection();
         return agda.sendRefine(
+            $('#agda_command_args_meta').val(),
+            $('#agda_command_args_expr').val()
+        );
+    });
+    $('#agda_command_case').click(function () {
+        var pos = editor.getSession().getDocument().indexToPosition(metas[$('#agda_command_args_meta').val()], 0);
+        editor.moveCursorToPosition(pos);
+        editor.clearSelection();
+        return agda.sendCase(
             $('#agda_command_args_meta').val(),
             $('#agda_command_args_expr').val()
         );

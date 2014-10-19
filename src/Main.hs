@@ -67,6 +67,9 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
           MessageRefine iid range expr -> do
             run (Agda.Cmd_refine iid range expr)
             dispatch conn dir
+          MessageCase iid range expr -> do
+            run (Agda.Cmd_make_case iid range expr)
+            dispatch conn dir
 
 response :: WS.Connection -> Agda.Response -> Agda.TCM ()
 response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
@@ -118,7 +121,15 @@ response  conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ WS.sen
                                  Agda.Give_NoParen    -> "Give_NoParen" -- TODO: fix
             ]
           ]
-response _conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ putStrLn "Resp_MakeCase"
+response  conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+    res = JSON.object
+          [ "type" JSON..= ("case" :: String)
+          , "contents" JSON..=
+            JSON.object
+            [ "meta" JSON..= ("" :: String)
+            , "result" JSON..= ss
+            ]
+          ]
 response _conn (Agda.Resp_SolveAll interactionIdAndExprs) = liftIO $ print interactionIdAndExprs
 response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
     res = JSON.object
@@ -197,6 +208,7 @@ data Message = MessageLoad T.Text
              | MessageConstraints
              | MessageGive Agda.InteractionId Agda.Range String
              | MessageRefine Agda.InteractionId Agda.Range String
+             | MessageCase Agda.InteractionId Agda.Range String
                deriving (Eq, Show)
 
 instance JSON.FromJSON Message where
@@ -216,5 +228,9 @@ instance JSON.FromJSON Message where
                     <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
                     <*> return Agda.noRange
                     <*> (v JSON..: "contents" >>= (JSON..: "expr"))
+        "case" -> MessageCase
+                  <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
+                  <*> return Agda.noRange
+                  <*> (v JSON..: "contents" >>= (JSON..: "expr"))
         _ -> mzero
     parseJSON _ = mzero
