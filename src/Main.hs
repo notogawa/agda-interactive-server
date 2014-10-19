@@ -99,8 +99,8 @@ response  conn (Agda.Resp_HighlightingInfo highlightingInfo _moduleToSource) = l
     fromNameKind (Just (Highlight.Constructor Agda.CoInductive)) = Just "CoinductiveConstructor"
     fromNameKind x = fmap show x
 
-response _conn (Agda.Resp_Status status) = liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
-response _conn (Agda.Resp_JumpToError filePath n) = liftIO $ print (filePath, n)
+response _conn (Agda.Resp_Status _status) = return () -- liftIO $ print (Agda.sShowImplicitArguments status, Agda.sChecked status)
+response _conn (Agda.Resp_JumpToError _filePath _n) = return () -- liftIO $ print (filePath, n)
 response  conn (Agda.Resp_InteractionPoints interactionIds) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
     res = JSON.object
           [ "type" JSON..= ("metas" :: String)
@@ -121,7 +121,7 @@ response  conn (Agda.Resp_GiveAction interactionId giveResult) = liftIO $ WS.sen
                                  Agda.Give_NoParen    -> "Give_NoParen" -- TODO: fix
             ]
           ]
-response  conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
+response  conn (Agda.Resp_MakeCase _makeCaseVariant ss) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
     res = JSON.object
           [ "type" JSON..= ("case" :: String)
           , "contents" JSON..=
@@ -130,7 +130,7 @@ response  conn (Agda.Resp_MakeCase makeCaseVariant ss) = liftIO $ WS.sendTextDat
             , "result" JSON..= ss
             ]
           ]
-response _conn (Agda.Resp_SolveAll interactionIdAndExprs) = liftIO $ print interactionIdAndExprs
+response _conn (Agda.Resp_SolveAll _interactionIdAndExprs) = return () -- liftIO $ print interactionIdAndExprs
 response  conn (Agda.Resp_DisplayInfo displayInfo) = liftIO $ WS.sendTextData conn $ T.decodeUtf8 $ LBS.toStrict $ JSON.encode res where
     res = JSON.object
           [ "type" JSON..= ("displayInfo" :: String)
@@ -169,7 +169,7 @@ main :: IO ()
 main = do
   let port = 3000
   let setting = Warp.setPort port Warp.defaultSettings
-  putStrLn $ "start server port=" ++ show port
+  -- putStrLn $ "start server port=" ++ show port
   Warp.runSettings setting simpleWSWaiApp
 
 simpleWSWaiApp :: Wai.Application
@@ -195,7 +195,7 @@ spawnPingThread conn interval =
 
 simpleWSServerApp :: WS.ServerApp
 simpleWSServerApp pdconn = do
-  putStrLn "Websocket Request received"
+  -- putStrLn "Websocket Request received"
   conn <- WS.acceptRequest pdconn
   withSystemTempDirectory "ais" $ \dir -> do
     _ <- spawnPingThread conn 10
