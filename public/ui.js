@@ -1,9 +1,10 @@
 $(document).ready(function() {
     var editor = ace.edit("agda_buffer");
-    // editor.setOptions({
-    //     fontFamily: "DejaVu Sans Mono",
-    //     fontSize: "10pt"
-    // });
+    // http://wiki.portal.chalmers.se/agda/pmwiki.php?n=Docs.HowToSeeUnicode
+    editor.setOptions({
+        fontFamily: "DejaVu Sans Mono",
+        fontSize: "10pt"
+    });
     editor.commands.addCommand({
         name: 'agda-input-trans',
         bindKey: {win: '\\',  mac: '\\'},
