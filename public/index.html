@@ -16,26 +16,23 @@
 import Relation.Binary.PropositionalEquality as PropEq
 open PropEq using (_≡_; refl; sym; cong; trans)
 
-data day : Set where
-  monday : day
-  tuesday : day
-  wednesday : day
-  thursday : day
-  friday : day
-  saturday : day
-  sunday : day
+-- natural number
+data ℕ : Set where
+  zero : ℕ
+  suc : ℕ → ℕ
 
-next-weekday : day → day
-next-weekday monday = tuesday
-next-weekday tuesday = wednesday
-next-weekday wednesday = thursday
-next-weekday thursday = friday
-next-weekday friday = monday
-next-weekday saturday = monday
-next-weekday sunday = monday
+-- plus operator
+_+_ : ℕ → ℕ → ℕ
+zero + b = b
+suc a + b = suc (a + b)
 
-test-next-weekday : next-weekday (next-weekday saturday) ≡ tuesday
-test-next-weekday = ?
+-- zero is a left identity element
+0-is-identityˡ : (n : ℕ) → zero + n ≡ n
+0-is-identityˡ n = ?
+
+-- zero is a right identity element
+0-is-identityʳ : (n : ℕ) → n + zero ≡ n
+0-is-identityʳ n = ?
 </div>
       </div>
       <div style="width: auto; height: 200px; font-size: 10pt;">
