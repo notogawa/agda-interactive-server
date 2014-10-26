@@ -69,11 +69,6 @@ var Agda = (function () {
         msg.contents.source = source;
         this._connection.send(JSON.stringify(msg));
     }
-    function sendConstraints () {
-        var msg = {};
-        msg.type = 'constraints';
-        this._connection.send(JSON.stringify(msg));
-    }
     function sendSolveAll () {
         var msg = {};
         msg.type = 'solveAll';
@@ -123,7 +118,6 @@ var Agda = (function () {
     Agda.prototype = {
         constructor: Agda,
         sendLoad: sendLoad,
-        sendConstraints: sendConstraints,
         sendSolveAll: sendSolveAll,
         sendGive: sendGive,
         sendRefine: sendRefine,

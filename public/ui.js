@@ -146,9 +146,6 @@ $(document).ready(function() {
         editor.setValue(window.localStorage.getItem("agda_buffer"));
         return agda.sendLoad(editor.getValue());
     });
-    $('#agda_command_metas').click(function () {
-        return agda.sendMetas();
-    });
     $('#agda_command_give').click(function () {
         var pos = editor.getSession().getDocument().indexToPosition(metas[$('#agda_command_args_meta').val()], 0);
         editor.moveCursorToPosition(pos);
