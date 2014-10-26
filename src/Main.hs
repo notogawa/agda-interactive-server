@@ -56,8 +56,8 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
           MessageSolveAll -> do
             run (Agda.Cmd_solveAll)
             dispatch conn dir
-          MessageConstraints -> do
-            run (Agda.Cmd_constraints)
+          MessageContext iid range expr -> do
+            run (Agda.Cmd_goal_type_context (read "AsIs") iid range expr)
             dispatch conn dir
           MessageGive iid range expr -> do
             run (Agda.Cmd_give iid range expr)
@@ -199,7 +199,7 @@ appWebSocketAgda req = do
 data Message = MessageLoad T.Text
              | MessageMetas
              | MessageSolveAll
-             | MessageConstraints
+             | MessageContext Agda.InteractionId Agda.Range String
              | MessageGive Agda.InteractionId Agda.Range String
              | MessageRefine Agda.InteractionId Agda.Range String
              | MessageCase Agda.InteractionId Agda.Range String
@@ -213,7 +213,10 @@ instance JSON.FromJSON Message where
                   <$> (v JSON..: "contents" >>= (JSON..: "source"))
         "metas" -> return MessageMetas
         "solveAll" -> return MessageSolveAll
-        "constraints" -> return MessageConstraints
+        "context" -> MessageContext
+                     <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
+                     <*> return Agda.noRange
+                     <*> (v JSON..: "contents" >>= (JSON..: "expr"))
         "give" -> MessageGive
                   <$> fmap toEnum (v JSON..: "contents" >>= (JSON..: "meta"))
                   <*> return Agda.noRange

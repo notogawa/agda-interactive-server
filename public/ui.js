@@ -41,6 +41,7 @@ $(document).ready(function() {
         },
         function (msg) {
             var sel = $('#agda_command_args_meta');
+            var v = sel.val();
             sel.empty();
             if (msg.metas.length == 0) {
                 sel.css('display', 'none');
@@ -53,6 +54,7 @@ $(document).ready(function() {
                 });
                 sel.css('display', 'inline');
             }
+            if (v) sel.val(v);
         },
         function (msg) {
             editor.remove('?');
@@ -145,6 +147,18 @@ $(document).ready(function() {
     $('#agda_buffer_load').click(function () {
         editor.setValue(window.localStorage.getItem("agda_buffer"));
         return agda.sendLoad(editor.getValue());
+    });
+    $('#agda_command_args_meta').change(function () {
+        return agda.sendContext(
+            $('#agda_command_args_meta').val(),
+            $('#agda_command_args_expr').val()
+        );
+    });
+    $('#agda_command_context').click(function () {
+        return agda.sendContext(
+            $('#agda_command_args_meta').val(),
+            $('#agda_command_args_expr').val()
+        );
     });
     $('#agda_command_give').click(function () {
         var pos = editor.getSession().getDocument().indexToPosition(metas[$('#agda_command_args_meta').val()], 0);

@@ -69,6 +69,14 @@ var Agda = (function () {
         msg.contents.source = source;
         this._connection.send(JSON.stringify(msg));
     }
+    function sendContext (meta, expr) {
+        var msg = {};
+        msg.type = 'context';
+        msg.contents = {};
+        msg.contents.meta = parseInt(meta, 10);
+        msg.contents.expr = expr;
+        this._connection.send(JSON.stringify(msg));
+    }
     function sendSolveAll () {
         var msg = {};
         msg.type = 'solveAll';
@@ -118,6 +126,7 @@ var Agda = (function () {
     Agda.prototype = {
         constructor: Agda,
         sendLoad: sendLoad,
+        sendContext: sendContext,
         sendSolveAll: sendSolveAll,
         sendGive: sendGive,
         sendRefine: sendRefine,
