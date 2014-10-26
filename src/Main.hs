@@ -63,7 +63,7 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
             run (Agda.Cmd_give iid range expr)
             dispatch conn dir
           MessageRefine iid range expr -> do
-            run (Agda.Cmd_refine iid range expr)
+            run (Agda.Cmd_refine_or_intro True iid range expr)
             dispatch conn dir
           MessageCase iid range expr -> do
             run (Agda.Cmd_make_case iid range expr)
