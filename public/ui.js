@@ -21,7 +21,7 @@ $(document).ready(function() {
     });
     var metas = [];
     var agda = new Agda(
-        ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host,
+        ((location.protocol == 'http:') ? 'ws://' : 'wss://') + location.host + location.pathname,
         function () {
             return agda.sendLoad(editor.getValue());
         },

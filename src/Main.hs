@@ -48,7 +48,8 @@ dispatch conn dir = liftIO (WS.receiveData conn) >>= dispatch' . JSON.decode whe
               let newsrc = src ++ ".new"
               T.writeFile newsrc source
               copyFile newsrc src
-            run (Agda.Cmd_load src [dir, "/usr/share/agda-stdlib"])
+            pwd <- liftIO $ getCurrentDirectory
+            run (Agda.Cmd_load src [dir, pwd ++ "/agda-stdlib"])
             dispatch conn dir
           MessageMetas -> do
             run (Agda.Cmd_metas)
@@ -165,7 +166,7 @@ response _conn (Agda.Resp_ClearHighlighting) = return ()
 
 main :: IO ()
 main = do
-  let port = 3000
+  let port = 3001
   let setting = Warp.setPort port Warp.defaultSettings
   let app = WaiWS.websocketsOr WS.defaultConnectionOptions appWebSocketAgda appStaticFiles
   Warp.runSettings setting app
